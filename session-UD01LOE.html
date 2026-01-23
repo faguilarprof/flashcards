@@ -1,0 +1,1921 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>session-UD01-LOE </title>
+    <style>
+/* Estilos del Memory Trainer - MODIFICADO SIN BOTONES ANTERIOR/SIGUIENTE */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            color: #1e293b;
+            line-height: 1.5;
+        }
+
+        .memory-trainer-container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            width: 100%;
+            max-width: 800px;
+            min-height: 600px;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .trainer-header {
+            background: linear-gradient(135deg, #EC4899, #d83485);
+            color: white;
+            padding: 25px;
+            text-align: center;
+            border-bottom: 3px solid rgba(255,255,255,0.2);
+        }
+
+        .trainer-header h1 {
+            font-size: 28px;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+        }
+
+        .stats-bar {
+            display: flex;
+            justify-content: space-around;
+            background: rgba(0,0,0,0.1);
+            padding: 15px;
+            margin-top: 10px;
+            border-radius: 10px;
+        }
+
+        .stat { text-align: center; flex: 1; }
+        .stat-label { font-size: 12px; opacity: 0.8; text-transform: uppercase; margin-bottom: 5px; }
+        .stat-value { font-size: 24px; font-weight: bold; margin-top: 5px; }
+
+        .trainer-content {
+            padding: 30px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 400px;
+            flex: 1;
+        }
+
+        .start-screen { text-align: center; animation: fadeIn 0.5s; width: 100%; max-width: 600px; }
+        .start-screen h2 { color: #EC4899; margin-bottom: 20px; font-size: 32px; display: flex; align-items: center; justify-content: center; gap: 12px; }
+
+        .instructions-box {
+            background: #f8f9fa;
+            border: 2px solid #e9ecef;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 25px;
+            text-align: left;
+            display: flex;
+            align-items: flex-start;
+            gap: 15px;
+        }
+
+        .instructions-box i {
+            color: #EC4899;
+            font-size: 24px;
+            margin-top: 2px;
+        }
+
+        .instructions-box p {
+            margin: 0;
+            color: #495057;
+            line-height: 1.6;
+        }
+
+        .study-tips {
+            background: #e7f5ff;
+            border: 2px solid #a5d8ff;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 25px;
+            text-align: left;
+        }
+
+        .study-tips h3 {
+            color: #EC4899;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .study-tips ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .study-tips li {
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: #495057;
+        }
+
+        .study-tips li i {
+            color: #EC4899;
+            font-size: 16px;
+        }
+
+        .session-summary {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            margin: 25px 0;
+            flex-wrap: wrap;
+        }
+
+        .summary-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: #f8f9fa;
+            padding: 12px 18px;
+            border-radius: 10px;
+            border: 1px solid #e9ecef;
+            font-size: 14px;
+        }
+
+        .summary-item i {
+            color: #EC4899;
+        }
+
+        .study-screen { width: 100%; animation: fadeIn 0.5s; }
+
+        .progress-bar-container {
+            width: 100%;
+            height: 12px;
+            background: #e5e7eb;
+            border-radius: 6px;
+            overflow: hidden;
+            margin-bottom: 20px;
+            position: relative;
+        }
+
+        .progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, #EC4899, #ff5cad);
+            width: 0%;
+            transition: width 0.5s;
+        }
+
+        .progress-label {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 11px;
+            font-weight: 600;
+            color: #EC4899;
+        }
+
+        .important-badge {
+            background: linear-gradient(135deg, #ffd166, #f59e0b);
+            color: #92400e;
+            padding: 8px 16px;
+            border-radius: 20px;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 15px;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        .status-badge {
+            padding: 8px 16px;
+            border-radius: 20px;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 15px;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        .status-badge.learned {
+            background: linear-gradient(135deg, #EC4899, #10b981);
+            color: #065f46;
+        }
+
+        .status-badge.difficult {
+            background: linear-gradient(135deg, #ef476f, #ef4444);
+            color: #7f1d1d;
+        }
+
+        .card-container {
+            perspective: 1000px;
+            width: 100%;
+            max-width: 500px;
+            height: 300px;
+            margin: 20px auto;
+        }
+
+        .flashcard {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            transform-style: preserve-3d;
+            transition: transform 0.6s;
+            cursor: pointer;
+        }
+
+        .flashcard.flipped {
+            transform: rotateY(180deg);
+        }
+
+        .card-front, .card-back {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden;
+            border-radius: 15px;
+            padding: 30px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+
+        .card-front {
+            background: #FFFFFF;
+            border: 3px solid #EC4899;
+            color: #1e293b;
+        }
+
+        .card-back {
+            background: #FFF0EB;
+            border: 3px solid #06d6a0;
+            color: #1e293b;
+            transform: rotateY(180deg);
+        }
+
+        .card-content {
+            text-align: center;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .card-content h3 {
+            font-size: 18px;
+            color: #6b7280;
+            margin-bottom: 20px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .concept-text, .definition-text {
+            font-size: 28px;
+            font-weight: 600;
+            line-height: 1.4;
+            word-break: break-word;
+            max-height: 180px;
+            overflow-y: auto;
+            padding: 10px;
+            width: 100%;
+        }
+
+        .card-hint {
+            font-size: 14px;
+            color: #9ca3af;
+            font-style: italic;
+            margin-top: 15px;
+        }
+
+        .card-actions {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin: 25px 0;
+            flex-wrap: wrap;
+        }
+
+        .session-controls {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 10px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            min-width: 140px;
+            justify-content: center;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #EC4899, #e23e8f);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(236, 72, 153, 0.4);
+        }
+
+        .btn-secondary {
+            background: #f3f4f6;
+            color: #374151;
+            border: 2px solid #d1d5db;
+        }
+
+        .btn-secondary:hover {
+            background: #e5e7eb;
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, #EC4899, #10b981);
+            color: white;
+        }
+
+        .btn-success:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(16, 185, 129, 0.4);
+        }
+
+        .btn-warning {
+            background: linear-gradient(135deg, #ffd166, #f59e0b);
+            color: #92400e;
+        }
+
+        .btn-warning:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(245, 158, 11, 0.4);
+        }
+
+        .btn-danger {
+            background: linear-gradient(135deg, #ef476f, #ef4444);
+            color: white;
+        }
+
+        .btn-danger:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(239, 68, 68, 0.4);
+        }
+
+        .btn-large {
+            padding: 15px 40px;
+            font-size: 18px;
+        }
+
+        .results-screen {
+            text-align: center;
+            animation: fadeIn 0.5s;
+            width: 100%;
+            max-width: 700px;
+        }
+
+        .results-screen h2 {
+            color: #EC4899;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+        }
+
+        .results-message {
+            font-size: 18px;
+            color: #374151;
+            margin-bottom: 15px;
+            line-height: 1.5;
+        }
+
+        .results-recommendation {
+            background: #f0f9ff;
+            border: 2px solid #a5d8ff;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 25px;
+            color: #1c7ed6;
+            font-size: 16px;
+        }
+
+        .results-stats {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+            margin: 30px 0;
+        }
+
+        @media (min-width: 768px) {
+            .results-stats {
+                grid-template-columns: repeat(4, 1fr);
+            }
+        }
+
+        .stat-card {
+            background: white;
+            border: 2px solid #e5e7eb;
+            border-radius: 15px;
+            padding: 20px;
+            text-align: center;
+            transition: transform 0.3s;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+            border-color: #EC4899;
+        }
+
+        .stat-icon {
+            font-size: 32px;
+            color: #EC4899;
+            margin-bottom: 10px;
+        }
+
+        .stat-value {
+            font-size: 32px;
+            font-weight: bold;
+            color: #1e293b;
+            margin-bottom: 5px;
+        }
+
+        .stat-label {
+            font-size: 14px;
+            color: #6b7280;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        /* NUEVOS ESTILOS PARA LA LISTA DE CONCEPTOS DIFÍCILES */
+        .difficult-concepts {
+            background: #fef3c7;
+            border: 2px solid #f59e0b;
+            border-radius: 10px;
+            padding: 25px;
+            margin: 25px 0;
+            text-align: left;
+            width: 100%;
+            max-width: 700px;
+        }
+
+        .difficult-concepts h3 {
+            color: #92400e;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 22px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #fbbf24;
+        }
+
+        .difficult-concepts p {
+            color: #78350f;
+            margin-bottom: 15px;
+            font-size: 16px;
+        }
+
+        .concepts-list {
+            margin-top: 15px;
+            max-height: 300px;
+            overflow-y: auto;
+            padding-right: 5px;
+        }
+
+        .concept-item {
+            background: white;
+            border: 1px solid #fcd34d;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            overflow: hidden;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+            transition: transform 0.2s;
+        }
+
+        .concept-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
+
+        .concept-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 15px;
+            background: #fef3c7;
+            border-bottom: 1px solid #fcd34d;
+        }
+
+        .concept-header .emoji {
+            color: #d97706;
+            font-size: 18px;
+        }
+
+        .concept-title {
+            font-weight: bold;
+            color: #92400e;
+            font-size: 18px;
+        }
+
+        .important-tag {
+            background: #f59e0b;
+            color: white;
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: bold;
+            margin-left: auto;
+        }
+
+        .definition-content {
+            padding: 15px;
+            background: #fffbeb;
+            color: #78350f;
+            line-height: 1.6;
+            font-size: 15px;
+        }
+
+        .definition-content strong {
+            color: #92400e;
+        }
+
+        .no-difficult-concepts {
+            text-align: center;
+            padding: 20px;
+            color: #6b7280;
+            font-style: italic;
+            border: 2px dashed #d1d5db;
+            border-radius: 8px;
+            background: #f9fafb;
+            margin: 15px 0;
+        }
+
+        .no-difficult-concepts .emoji {
+            font-size: 24px;
+            margin-bottom: 10px;
+            display: block;
+        }
+
+        .status-message {
+            padding: 15px;
+            border-radius: 8px;
+            margin: 15px 0;
+            text-align: center;
+            font-weight: 500;
+            animation: fadeIn 0.3s;
+        }
+
+        .status-message.success {
+            background: #d1fae5;
+            color: #065f46;
+            border: 2px solid #10b981;
+        }
+
+        .status-message.error {
+            background: #fee2e2;
+            color: #7f1d1d;
+            border: 2px solid #ef4444;
+        }
+
+        .status-message.warning {
+            background: #fef3c7;
+            color: #92400e;
+            border: 2px solid #f59e0b;
+        }
+
+        .status-message.info {
+            background: #dbeafe;
+            color: #1e40af;
+            border: 2px solid #3b82f6;
+        }
+
+        .no-cards-screen {
+            text-align: center;
+            padding: 40px;
+            animation: fadeIn 0.5s;
+        }
+
+        .no-cards-screen i {
+            font-size: 60px;
+            color: #9ca3af;
+            margin-bottom: 20px;
+        }
+
+        .no-cards-screen h2 {
+            color: #EC4899;
+            margin-bottom: 15px;
+        }
+
+        .no-cards-screen p {
+            color: #6b7280;
+            margin-bottom: 30px;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes flip {
+            0% { transform: rotateY(0); }
+            100% { transform: rotateY(180deg); }
+        }
+
+        @media (max-width: 768px) {
+            .memory-trainer-container {
+                border-radius: 15px;
+                min-height: 500px;
+            }
+            
+            .trainer-header {
+                padding: 20px;
+            }
+            
+            .trainer-header h1 {
+                font-size: 24px;
+            }
+            
+            .card-container {
+                height: 250px;
+            }
+            
+            .concept-text, .definition-text {
+                font-size: 22px;
+            }
+            
+            .btn {
+                min-width: 120px;
+                padding: 10px 20px;
+                font-size: 14px;
+            }
+            
+            .results-stats {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .difficult-concepts {
+                padding: 20px;
+            }
+            
+            .concept-title {
+                font-size: 16px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .trainer-content {
+                padding: 20px;
+            }
+            
+            .card-container {
+                height: 200px;
+            }
+            
+            .concept-text, .definition-text {
+                font-size: 18px;
+            }
+            
+            .card-actions {
+                flex-direction: column;
+            }
+            
+            .btn {
+                width: 100%;
+                max-width: 250px;
+            }
+            
+            .results-stats {
+                grid-template-columns: 1fr;
+            }
+            
+            .difficult-concepts h3 {
+                font-size: 18px;
+            }
+            
+            .concept-header {
+                flex-wrap: wrap;
+            }
+            
+            .important-tag {
+                margin-top: 5px;
+                margin-left: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="memory-trainer-container" id="trainerContainer">
+        <div class="trainer-header">
+            <h1>🧠 session-UD01-LOE </h1>
+            <div class="stats-bar">
+                <div class="stat">
+                    <div class="stat-label">Aprendidas</div>
+                    <div class="stat-value" id="learnedDisplay">0</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-label">Tiempo</div>
+                    <div class="stat-value" id="timeDisplay">0:00</div>
+                </div>
+            </div>
+        </div>
+        <div class="trainer-content" id="trainerContent">
+            <!-- El contenido se carga dinámicamente -->
+        </div>
+    </div>
+    <script>
+        // ==============================================
+        // DATOS DE LA SESIÓN EMBEBIDOS
+        // ==============================================
+        var EMBEDDED_TRAINER_DATA = {
+  "metadata": {
+    "version": "1.0",
+    "created": "2026-01-23T10:18:27.654Z",
+    "author": "Memory Trainer",
+    "tags": [],
+    "lastModified": "2026-01-23T10:18:27.654Z",
+    "sessionTitle": "session-UD01-LOE ",
+    "totalCards": 80,
+    "importantTerms": 50
+  },
+  "config": {
+    "sessionTitle": "session-UD01-LOE ",
+    "instructions": "Haz clic en las cartas para voltearlas. Marca las que ya conoces como ✓ Aprendidas y las que necesitas repasar como ✗ Dificultad.",
+    "subject": "General",
+    "studyMode": "mixed",
+    "cardsPerSession": 80,
+    "order": "random",
+    "showTimer": true,
+    "autoFlip": true,
+    "enableSound": true,
+    "showProgress": true,
+    "customColors": {
+      "primary": "#EC4899",
+      "cardFront": "#FFFFFF",
+      "cardBack": "#FFF0EB",
+      "success": "#EC4899",
+      "warning": "#ffd166",
+      "danger": "#ef476f"
+    }
+  },
+  "content": {
+    "cards": [
+      {
+        "concept": "Acervo comunitario",
+        "definition": "Conjunto de normas, leyes, regulaciones, políticas y prácticas que conforman el cuerpo de legislación y reglamentación de la Unión Europea (UE)"
+      },
+      {
+        "concept": "Administración laboral",
+        "definition": "Conjunto de organismos públicos que se encargan de la gestión de las relaciones laborales, incluyendo el Ministerio de Trabajo, la Inspección de Trabajo y otros órganos de mediación"
+      },
+      {
+        "concept": "⚠️ ️ Administración local",
+        "definition": "⚠️ ️ Conjunto de administraciones existentes con un ámbito geográfico inferior a la Comunidad Autónoma (Diputaciones provinciales, Cabildos y Consejos insulares, comarcas, ayuntamientos, Pedanías, distritos, áreas metropolitanas, etc)"
+      },
+      {
+        "concept": "⚠️ ️ Administración Pública",
+        "definition": "⚠️ ️ Herramienta con la que cuentan los poderes ejecutivos del Estado (gobierno estatal, autonómico y también Diputaciones provinciales, ayuntamientos...) para gestionar los servicios públicos"
+      },
+      {
+        "concept": "Autonomía territorial",
+        "definition": "Principio constitucional por el cual el Estado se organiza en municipios, provincias y comunidades autónomas, con capacidad para gestionar sus propios intereses"
+      },
+      {
+        "concept": "Bando municipal",
+        "definition": "Acto administrativo consistente en una manifestación solemne, emitida por el alcalde de un municipio"
+      },
+      {
+        "concept": "⚠️ ️ BOE (Boletín Oficial del Estado)",
+        "definition": "⚠️ ️ Diario oficial español dedicado a la publicación de determinadas leyes, disposiciones y actos de inserción obligatoria."
+      },
+      {
+        "concept": "⚠️ ️ Carácter personalísimo",
+        "definition": "⚠️ ️ Característica de la relación laboral por la cual el trabajo es de carácter individual e insustituible por parte del trabajador"
+      },
+      {
+        "concept": "CES (Consejo Económico y Social)",
+        "definition": "Ente público de carácter consultivo en materia socioeconómica y laboral, compuesto por representantes de organizaciones sindicales y empresariales más representativas"
+      },
+      {
+        "concept": "Comités de empresa",
+        "definition": "Representantes de los trabajadores elegidos por sufragio en proceso electoral democrático llevado a cabo en los centros de trabajo"
+      },
+      {
+        "concept": "⚠️ ️ Comunidades Autónomas",
+        "definition": "⚠️ ️ Entidades territoriales que forman parte de la organización territorial del Estado español, con capacidades de autogobierno reguladas por sus estatutos de autonomía"
+      },
+      {
+        "concept": "⚠️ ️ Congreso de los Diputados",
+        "definition": "⚠️ ️ Cámara Baja de las Cortes Generales que representa a los ciudadanos del estado español. Controla la acción del Gobierno, tiene el mayor peso en la redacción legislativa y elige al Presidente del Gobierno"
+      },
+      {
+        "concept": "Consejo de Estado",
+        "definition": "Máximo órgano consultivo del Gobierno, emite dictámenes sobre aquellos asuntos que someten a su consulta el Gobierno o sus miembros, bien con carácter preceptivo o facultativo."
+      },
+      {
+        "concept": "⚠️ ️ Constitución española",
+        "definition": "⚠️ ️ Norma jurídica suprema del Estado español que establece los derechos y deberes fundamentales de los ciudadanos y determina la estructura y funcionamiento de los poderes públicos. A ella están sujetos todos los poderes públicos y ciudadanos de España​ desde su entrada en vigor el 29 de diciembre de 1978."
+      },
+      {
+        "concept": "⚠️ ️ Convenio internacional",
+        "definition": "⚠️ ️ Acuerdo producido en el seno de una Organización internacional que los estados, en uso de su soberanía, son libres de ratificar e incorporar a derecho interno."
+      },
+      {
+        "concept": "⚠️ ️ Convenios colectivos",
+        "definition": "⚠️ ️ Acuerdos negociados entre representantes de trabajadores y empresarios que establecen condiciones laborales para grupos de trabajadores"
+      },
+      {
+        "concept": "⚠️ ️ Cortes Generales",
+        "definition": "⚠️ ️ Poder legislativo del Estado español compuesto por dos cámaras: Congreso de los Diputados y Senado, que representan al pueblo español"
+      },
+      {
+        "concept": "⚠️ ️ Costumbre jurídica",
+        "definition": "⚠️ ️ Norma jurídica no escrita que se ha convertido en obligatoria por el uso repetido y constante en el tiempo"
+      },
+      {
+        "concept": "Cuestión de confianza",
+        "definition": "Procedimiento por el cual el Presidente del Gobierno expone su programa ante el Congreso para pedir que ratifique su confianza en el mismo. Si la pierde, está obligado a dimitir y convocar elecciones."
+      },
+      {
+        "concept": "Defensor del Pueblo",
+        "definition": "Alto comisionado de las Cortes Generales designado para la defensa y protección de los derechos fundamentales recogidos en la Constitución"
+      },
+      {
+        "concept": "Delegado del Gobierno",
+        "definition": "Alto funcionario designado por el Gobierno de España para representar al gobierno central en una comunidad autónoma. Tiene responsabilidades relacionadas con el mantenimiento del orden público, la seguridad, la coordinación de servicios públicos y la implementación de políticas gubernamentales en su área de jurisdicción."
+      },
+      {
+        "concept": "Delegados de personal",
+        "definition": "Representantes de los trabajadores en empresas con menos de 50 empleados, elegidos para defender sus intereses laborales"
+      },
+      {
+        "concept": "⚠️ ️ Dependencia",
+        "definition": "⚠️ ️ Característica de la relación laboral por la cual el empresario ordena cuándo, dónde y cómo ha de realizarse el trabajo"
+      },
+      {
+        "concept": "Derecho administrativo",
+        "definition": "Rama del derecho público que regula la actividad de las administraciones públicas, incluyendo procedimientos administrativos y servicios públicos"
+      },
+      {
+        "concept": "Derecho civil",
+        "definition": "Rama del derecho privado que regula las relaciones civiles y personales entre individuos, incluyendo propiedad, contratos, sucesiones y familia"
+      },
+      {
+        "concept": "Derecho constitucional",
+        "definition": "Rama del derecho público que regula la estructura y funcionamiento del Estado, así como los derechos fundamentales de los ciudadanos"
+      },
+      {
+        "concept": "⚠️ ️ Derecho laboral",
+        "definition": "⚠️ ️ Conjunto de normas jurídicas que regulan las relaciones laborales entre empleadores y empleados, estableciendo derechos y obligaciones de ambas partes"
+      },
+      {
+        "concept": "Derecho mercantil",
+        "definition": "Rama del derecho privado que regula las relaciones comerciales y empresariales, incluyendo sociedades comerciales y contratos comerciales"
+      },
+      {
+        "concept": "Derecho mixto",
+        "definition": "Categoría jurídica que involucra aspectos tanto del derecho público como del privado, siendo el derecho laboral un ejemplo clásico"
+      },
+      {
+        "concept": "Derecho penal",
+        "definition": "Rama del derecho público que establece las normas y sanciones aplicables a los delitos y las infracciones"
+      },
+      {
+        "concept": "⚠️ ️ Derecho privado",
+        "definition": "⚠️ ️ Conjunto de normas que regulan las relaciones entre individuos, empresas y otras entidades privadas, protegiendo intereses privados"
+      },
+      {
+        "concept": "Derecho procesal",
+        "definition": "Rama del derecho público que establece las reglas y procedimientos para la resolución de conflictos en los distintos tribunales"
+      },
+      {
+        "concept": "⚠️ ️ Derecho público",
+        "definition": "⚠️ ️ Conjunto de normas que regulan las relaciones entre el Estado y los individuos o entre entidades públicas"
+      },
+      {
+        "concept": "⚠️ ️ Derechos Fundamentales",
+        "definition": "⚠️ ️ quellos derechos inviolables que pertenecen a todos los ciudadanos españoles, sin distinción de raza, sexo, religión, opinión o cualquier otra condición personal o social."
+      },
+      {
+        "concept": "⚠️ ️ Directiva Comunitaria",
+        "definition": "⚠️ ️ Norma legislativa de la Unión Europea que establece unas directrices y objetivos a los Estados para que adapten su legislación a lo establecido en ella. Es de obligado cumplimiento para los estados y requiere transposición a derecho interno a través de una ley de adaptación"
+      },
+      {
+        "concept": "⚠️ ️ Estatuto de los Trabajadores",
+        "definition": "⚠️ ️ Texto normativo fundamental que regula las relaciones laborales en España, estableciendo derechos y obligaciones de trabajadores y empresarios"
+      },
+      {
+        "concept": "Fuentes del derecho laboral",
+        "definition": "Origen de las normas jurídicas laborales que indican cuáles han de aplicarse en cada caso concreto, pudiendo ser internas o externas"
+      },
+      {
+        "concept": "⚠️ ️ Gobierno de España",
+        "definition": "⚠️ ️ Cabeza del ejecutivo español. Según la CE sus funciones son: dirigir la política interior y exterior, la Administración civil y militar y la defensa del Estado. Ejercer la función ejecutiva y la potestad reglamentaria de acuerdo con la Constitución y las leyes"
+      },
+      {
+        "concept": "⚠️ ️ In dubio pro operario",
+        "definition": "⚠️ ️ Principio jurídico laboral por el cual los tribunales interpretarán las normas de la forma que resulte más beneficiosa para el trabajador en caso de duda"
+      },
+      {
+        "concept": "⚠️ ️ Inspección de Trabajo",
+        "definition": "⚠️ ️ Organismo público responsable de la vigilancia del cumplimiento de todas las normas laborales, incluidas las de prevención de riesgos"
+      },
+      {
+        "concept": "⚠️ ️ Jurisprudencia",
+        "definition": "⚠️ ️ Conjunto de decisiones judiciales que establecen una interpretación uniforme de las normas jurídicas, especialmente del Tribunal Supremo"
+      },
+      {
+        "concept": "⚠️ ️ Ley",
+        "definition": "⚠️ ️ En el régimen constitucional, disposición votada por las cámaras legislativas y sancionada por el jefe del Estado."
+      },
+      {
+        "concept": "Ley autonómica",
+        "definition": "Ley emanada de las Comunidades Autónomas en virtud de la potestad legislativa que les es propia"
+      },
+      {
+        "concept": "⚠️ ️ Ley ordinaria",
+        "definition": "⚠️ ️ Norma jurídica aprobada por el Congreso de los Diputados y el Senado con mayoría simple que regula materias de carácter general."
+      },
+      {
+        "concept": "⚠️ ️ Ley orgánica",
+        "definition": "⚠️ ️ Norma jurídica aprobada por el Congreso de los Diputados con mayoría absoluta que regula materias de especial importancia constitucional: Son las relativas al desarrollo de los derechos fundamentales y de las libertades públicas, las que aprueben los Estatutos de Autonomía y el régimen electoral general y otras previstas expresamente en la Constitución."
+      },
+      {
+        "concept": "⚠️ ️ Mayoría absoluta",
+        "definition": "⚠️ ️ Consenso que se consigue cuando una decisión obtiene la mitad más uno de los votos en el órgano colegiado que corresponda."
+      },
+      {
+        "concept": "Mayoría simple",
+        "definition": "Más votos a favor que en contra"
+      },
+      {
+        "concept": "Moción de censura",
+        "definition": "Procedimento que permite al Congreso de los Diputados retirar su confianza al presidente del Gobierno y forzar su dimisión. Debe ser constructiva, proponiendo un candidato alternativo"
+      },
+      {
+        "concept": "⚠️ ️ Monarquía parlamentaria",
+        "definition": "⚠️ ️ Forma política del Estado español establecida en la Constitución donde el Rey es jefe de Estado pero el poder ejecutivo reside en el Gobierno"
+      },
+      {
+        "concept": "Negociación colectiva",
+        "definition": "Derecho constitucional a negociar condiciones laborales entre representantes de trabajadores y empresarios"
+      },
+      {
+        "concept": "⚠️ ️ Norma más favorable",
+        "definition": "⚠️ ️ Principio jurídico laboral por el cual se aplica la norma que, apreciada en su conjunto, sea más favorable para el trabajador"
+      },
+      {
+        "concept": "⚠️ ️ Norma mínima",
+        "definition": "⚠️ ️ Principio jurídico laboral que establece que las normas de rango superior determinan el contenido mínimo inderogable en beneficio del trabajador"
+      },
+      {
+        "concept": "⚠️ ️ Orden Ministerial",
+        "definition": "⚠️ ️ Disposición reglamentaria dictada por un ministro en el ámbito de sus competencias."
+      },
+      {
+        "concept": "⚠️ ️ Ordenamiento jurídico",
+        "definition": "⚠️ ️ Conjunto de leyes, principios y valores que organizan y regulan la vida en sociedad, garantizando la justicia y la convivencia pacífica"
+      },
+      {
+        "concept": "Ordenanza Municipal",
+        "definition": "Disposiciones administrativas de carácter general y de rango inferior a la ley aprobadas por los entes locales en el ámbito de sus competencias y en ejercicio de la potestad reglamentaria que tienen atribuida."
+      },
+      {
+        "concept": "⚠️ ️ Organización internacional",
+        "definition": "⚠️ ️ Son asociaciones que los Estados han creado voluntariamente en virtud de un tratado, para tratar cuestiones de interés común"
+      },
+      {
+        "concept": "⚠️ ️ Poder ejecutivo",
+        "definition": "⚠️ ️ Es el poder que se encarga del Gobierno y gestión de los servicios públicos"
+      },
+      {
+        "concept": "⚠️ ️ Poder judicial",
+        "definition": "⚠️ ️ Poder del estado que se encarga de impartir justicia en los tribunales, aplicando las normas del Derecho para resolver los conflictos juridicos."
+      },
+      {
+        "concept": "⚠️ ️ Poder legislativo",
+        "definition": "⚠️ ️ Poder que se encarga de la redacción y aprobación de las leyes."
+      },
+      {
+        "concept": "⚠️ ️ Por cuenta ajena (Ajenidad)",
+        "definition": "⚠️ ️ Característica de la relación laboral donde se trabaja para otra persona cediendo el fruto del trabajo a cambio de un salario"
+      },
+      {
+        "concept": "Principio de autonomía de la voluntad",
+        "definition": "Libertad para establecer entre particulares toda clase de pactos o condiciones siempre que no vayan en contra de la ley, la moral ni el orden público"
+      },
+      {
+        "concept": "⚠️ ️ Principio de jerarquía normativa",
+        "definition": "⚠️ ️ Ordenación jerárquica o escalonada de las normas jurídicas de modo que las normas de rango inferior no pueden contradecir ni vulnerar lo establecido por una norma de rango superior"
+      },
+      {
+        "concept": "⚠️ ️ Principios generales del derecho",
+        "definition": "⚠️ ️ Normas jurídicas no escritas que se deducen de la propia naturaleza del derecho y complementan el ordenamiento"
+      },
+      {
+        "concept": "Principios rectores de la política social y económica",
+        "definition": "Principios que reconocidos en la CE, arts. 39 a 52, informan la legislación positiva, la práctica judicial y la actuación de todos los poderes públicos. La protección a la salud, la cultura, los hijos, la familia, etc son ejemplos de este tipo de principios"
+      },
+      {
+        "concept": "Rama del derecho",
+        "definition": "Parte del ordenamiento jurídico que se ocupa de una determinada materia o ámbito de la vida social. Se pueden clasificar en dos grandes grupos: derecho público y privado"
+      },
+      {
+        "concept": "⚠️ ️ Real Decreto",
+        "definition": "⚠️ ️ Reglamento dictado por el Gobierno reunido en Consejo de Ministros de aplicación general a todo el territorio nacional"
+      },
+      {
+        "concept": "⚠️ ️ Real Decreto Legislativo",
+        "definition": "⚠️ ️ Norma jurídica con rango de ley, que emana del poder ejecutivo central, en virtud de delegación expresa efectuada por el poder legislativo (Cortes Generales) a través de una ley de bases"
+      },
+      {
+        "concept": "⚠️ ️ Real Decreto Ley",
+        "definition": "⚠️ ️ Norma jurídica con rango de ley, propia de países con monarquía parlamentaria, que emana del poder ejecutivo y es dictada en caso de extraordinaria y urgente necesidad. Requiere de posterior convalidación o ratificación de parte del poder legislativo, en los 30 días siguientes a su promulgación"
+      },
+      {
+        "concept": "⚠️ ️ Reglamento",
+        "definition": "⚠️ ️ Conjunto ordenado de reglas o preceptos dictados por la autoridad competente para la ejecución de una ley, para el funcionamiento de una corporación, de un servicio o de cualquier actividad."
+      },
+      {
+        "concept": "Reglamento Comunitario",
+        "definition": "Norma legislativa de la Unión Europea de obligado cumplimiento para los Estados y los ciudadanos de la Unión Europea. De aplicación directa"
+      },
+      {
+        "concept": "⚠️ ️ Relaciones laborales especiales",
+        "definition": "⚠️ ️ Actividades laborales que requieren regulación específica debido a sus características particulares, como deportistas profesionales o personal de alta dirección"
+      },
+      {
+        "concept": "⚠️ ️ Retribución",
+        "definition": "⚠️ ️ Característica esencial de la relación laboral por la cual toda actividad debe ser remunerada, excluyendo el trabajo gratuito"
+      },
+      {
+        "concept": "⚠️ ️ Senado",
+        "definition": "⚠️ ️ Cámara Alta de las Cortes Generales. Representa a los territorios de España"
+      },
+      {
+        "concept": "SEPE",
+        "definition": "Organismo público responsable de la gestión de las prestaciones por desempleo y de la colocación de los trabajadores"
+      },
+      {
+        "concept": "⚠️ ️ Separación de poderes",
+        "definition": "⚠️ ️ Principio constitucional que divide el poder del Estado en ejecutivo, legislativo y judicial para garantizar el equilibrio institucional"
+      },
+      {
+        "concept": "TRADE",
+        "definition": "Persona física que realiza actividad económica de forma habitual y personal para un cliente del que depende económicamente al menos en un 75%"
+      },
+      {
+        "concept": "⚠️ ️ Tratado internacional",
+        "definition": "⚠️ ️ Acuerdo celebrado por escrito entre Estados, o entre Estados y otros sujetos de derecho internacional, como las organizaciones internacionales, y regido por el Derecho Internacional. Ratificados por España y publicados en el BOE se incorporan a derecho interno."
+      },
+      {
+        "concept": "⚠️ ️ Tribunal Supremo",
+        "definition": "⚠️ ️ Más alta instancia jurisdiccional del Estado español, salvo en garantías constitucionales que corresponden al Tribunal Constitucional"
+      },
+      {
+        "concept": "⚠️ ️ Unión Europea",
+        "definition": "⚠️ ️ Organización supranacional cuyos poderes se basan en competencias cedidas por los Estados miembros, creando un derecho propio obligatorio"
+      },
+      {
+        "concept": "⚠️ ️ Voluntariedad",
+        "definition": "⚠️ ️ Característica de la relación laboral por la cual el trabajador debe ser libre de poner fin a la relación en cualquier momento"
+      }
+    ]
+  }
+};
+
+function StandaloneMemoryTrainer(config) {
+    config = config || {};
+    this.cards = Array.isArray(config.cards) ? config.cards : [];
+    this.sessionTitle = config.sessionTitle || "Sesión de Estudio";
+    this.instructions = config.instructions || "Haz clic en las cartas para voltearlas.";
+    this.studyMode = config.studyMode || "mixed";
+    this.cardsPerSession = parseInt(config.cardsPerSession) || Math.min(this.cards.length, 200);
+    this.order = config.order || "sequential";
+    this.showTimer = config.showTimer !== false;
+    this.autoFlip = config.autoFlip !== false;
+    this.enableSound = config.enableSound !== false;
+    this.showProgress = config.showProgress !== false;
+    this.customColors = config.customColors || {
+        primary: "#4361ee",
+        cardFront: "#ffffff",
+        cardBack: "#f8f9fa",
+        success: "#06d6a0",
+        warning: "#ffd166",
+        danger: "#ef476f"
+    };
+    this.state = {
+        active: false,
+        currentSession: [],
+        currentCardIndex: 0,
+        startTime: null,
+        learnedCards: [],
+        difficultCards: [],
+        cardStatus: {},
+        flippedCards: new Set(),
+        sessionStats: {
+            totalCards: 0,
+            learned: 0,
+            difficult: 0,
+            remaining: 0,
+            timeSpent: 0
+        }
+    };
+    this._processCards();
+}
+
+StandaloneMemoryTrainer.prototype._processCards = function() {
+    if (!Array.isArray(this.cards)) {
+        throw new Error("Las cartas deben ser un array");
+    }
+    this.cards = this.cards.map(function(card) {
+        if (!card || typeof card !== "object") return null;
+        var conceptStr = card.concept ? String(card.concept).trim() : "";
+        var definitionStr = card.definition ? String(card.definition).trim() : "";
+        var warningChar = "⚠️";
+        var isImportantConcept = conceptStr.indexOf(warningChar) === 0;
+        var isImportantDefinition = definitionStr.indexOf(warningChar) === 0;
+        var newCard = {
+            concept: isImportantConcept ? conceptStr.substring(warningChar.length).trim() : conceptStr,
+            definition: isImportantDefinition ? definitionStr.substring(warningChar.length).trim() : definitionStr,
+            important: isImportantConcept || isImportantDefinition,
+            status: "unseen",
+            timesSeen: 0,
+            timesFlipped: 0,
+            lastSeen: null
+        };
+        return newCard;
+    }).filter(function(card) {
+        return card && card.concept && card.definition;
+    });
+    if (this.cards.length < 1) {
+        throw new Error("Se necesita al menos 1 carta para estudiar");
+    }
+};
+
+StandaloneMemoryTrainer.prototype._shuffleArray = function(array) {
+    var shuffled = array.slice();
+    for (var i = shuffled.length - 1; i > 0; i--) {
+        var j = Math.floor(Math.random() * (i + 1));
+        var temp = shuffled[i];
+        shuffled[i] = shuffled[j];
+        shuffled[j] = temp;
+    }
+    return shuffled;
+};
+
+StandaloneMemoryTrainer.prototype._getElapsedTime = function() {
+    if (!this.state.startTime) return 0;
+    return Date.now() - this.state.startTime;
+};
+
+StandaloneMemoryTrainer.prototype._formatTime = function(ms) {
+    var seconds = Math.floor(ms / 1000);
+    var minutes = Math.floor(seconds / 60);
+    var remainingSeconds = seconds % 60;
+    if (minutes > 0) {
+        return minutes + ":" + (remainingSeconds < 10 ? "0" : "") + remainingSeconds;
+    }
+    return "0:" + (remainingSeconds < 10 ? "0" : "") + remainingSeconds;
+};
+
+StandaloneMemoryTrainer.prototype._updateStats = function() {
+    var total = this.state.currentSession.length;
+    var learned = this.state.learnedCards.length;
+    var difficult = this.state.difficultCards.length;
+    var remaining = total - learned;
+    this.state.sessionStats = {
+        totalCards: total,
+        learned: learned,
+        difficult: difficult,
+        remaining: remaining,
+        timeSpent: this._getElapsedTime()
+    };
+};
+
+StandaloneMemoryTrainer.prototype.startSession = function() {
+    if (this.cards.length < 1) {
+        throw new Error("No hay cartas para estudiar");
+    }
+    this.state = {
+        active: true,
+        currentSession: [],
+        currentCardIndex: 0,
+        startTime: Date.now(),
+        learnedCards: [],
+        difficultCards: [],
+        cardStatus: {},
+        flippedCards: new Set(),
+        sessionStats: {
+            totalCards: 0,
+            learned: 0,
+            difficult: 0,
+            remaining: 0,
+            timeSpent: 0
+        }
+    };
+    var cardsToStudy = this.cards.slice();
+    if (this.studyMode === "difficult") {
+        cardsToStudy = cardsToStudy.filter(function(card) {
+            return this.state.cardStatus[card.concept] === "difficult" || card.important;
+        }.bind(this));
+    }
+    cardsToStudy = cardsToStudy.slice(0, this.cardsPerSession);
+    if (this.order === "random") {
+        cardsToStudy = this._shuffleArray(cardsToStudy);
+    }
+    this.state.currentSession = cardsToStudy;
+    this.state.sessionStats.totalCards = cardsToStudy.length;
+    this.state.sessionStats.remaining = cardsToStudy.length;
+    cardsToStudy.forEach(function(card) {
+        this.state.cardStatus[card.concept] = card.status || "unseen";
+    }.bind(this));
+    return {
+        success: true,
+        totalCards: cardsToStudy.length,
+        firstCard: cardsToStudy[0],
+        sessionTitle: this.sessionTitle
+    };
+};
+
+StandaloneMemoryTrainer.prototype.getNextCard = function() {
+    if (!this.state.active || this.state.currentCardIndex >= this.state.currentSession.length) {
+        return null;
+    }
+    var card = this.state.currentSession[this.state.currentCardIndex];
+    var totalCards = this.state.currentSession.length;
+    var currentNumber = this.state.currentCardIndex + 1;
+    var progress = totalCards > 0 ? Math.round((this.state.currentCardIndex / totalCards) * 100) : 0;
+    card.timesSeen = (card.timesSeen || 0) + 1;
+    card.lastSeen = new Date().toISOString();
+    return {
+        card: card,
+        cardNumber: currentNumber,
+        totalCards: totalCards,
+        progress: progress,
+        isImportant: card.important,
+        status: this.state.cardStatus[card.concept] || "unseen",
+        flipped: this.state.flippedCards.has(card.concept),
+        timeSpent: this._getElapsedTime()
+    };
+};
+
+StandaloneMemoryTrainer.prototype.nextCard = function() {
+    if (this.state.currentCardIndex >= this.state.currentSession.length - 1) {
+        return false;
+    }
+    this.state.currentCardIndex++;
+    return true;
+};
+
+StandaloneMemoryTrainer.prototype.previousCard = function() {
+    if (this.state.currentCardIndex <= 0) {
+        return false;
+    }
+    this.state.currentCardIndex--;
+    return true;
+};
+
+StandaloneMemoryTrainer.prototype.flipCard = function(cardConcept) {
+    var card = this.state.currentSession.find(function(c) {
+        return c.concept === cardConcept;
+    });
+    if (!card) {
+        return { success: false, error: "Carta no encontrada" };
+    }
+    this.state.flippedCards.add(cardConcept);
+    card.timesFlipped = (card.timesFlipped || 0) + 1;
+    return {
+        success: true,
+        card: card,
+        flipped: true,
+        definition: card.definition,
+        timesFlipped: card.timesFlipped
+    };
+};
+
+StandaloneMemoryTrainer.prototype.markAsLearned = function(cardConcept) {
+    var card = this.state.currentSession.find(function(c) {
+        return c.concept === cardConcept;
+    });
+    if (!card) {
+        return { success: false, error: "Carta no encontrada" };
+    }
+    this.state.cardStatus[cardConcept] = "learned";
+    if (this.state.learnedCards.indexOf(cardConcept) === -1) {
+        this.state.learnedCards.push(cardConcept);
+    }
+    var difficultIndex = this.state.difficultCards.indexOf(cardConcept);
+    if (difficultIndex > -1) {
+        this.state.difficultCards.splice(difficultIndex, 1);
+    }
+    this._updateStats();
+    return {
+        success: true,
+        card: card,
+        status: "learned",
+        learnedCount: this.state.learnedCards.length,
+        difficultCount: this.state.difficultCards.length
+    };
+};
+
+StandaloneMemoryTrainer.prototype.markAsDifficult = function(cardConcept) {
+    var card = this.state.currentSession.find(function(c) {
+        return c.concept === cardConcept;
+    });
+    if (!card) {
+        return { success: false, error: "Carta no encontrada" };
+    }
+    this.state.cardStatus[cardConcept] = "difficult";
+    if (this.state.difficultCards.indexOf(cardConcept) === -1) {
+        this.state.difficultCards.push(cardConcept);
+    }
+    var learnedIndex = this.state.learnedCards.indexOf(cardConcept);
+    if (learnedIndex > -1) {
+        this.state.learnedCards.splice(learnedIndex, 1);
+    }
+    this._updateStats();
+    return {
+        success: true,
+        card: card,
+        status: "difficult",
+        learnedCount: this.state.learnedCards.length,
+        difficultCount: this.state.difficultCards.length
+    };
+};
+
+StandaloneMemoryTrainer.prototype.resetCard = function(cardConcept) {
+    var card = this.state.currentSession.find(function(c) {
+        return c.concept === cardConcept;
+    });
+    if (!card) {
+        return { success: false, error: "Carta no encontrada" };
+    }
+    this.state.cardStatus[cardConcept] = "unseen";
+    var learnedIndex = this.state.learnedCards.indexOf(cardConcept);
+    if (learnedIndex > -1) {
+        this.state.learnedCards.splice(learnedIndex, 1);
+    }
+    var difficultIndex = this.state.difficultCards.indexOf(cardConcept);
+    if (difficultIndex > -1) {
+        this.state.difficultCards.splice(difficultIndex, 1);
+    }
+    this._updateStats();
+    return {
+        success: true,
+        card: card,
+        status: "unseen"
+    };
+};
+
+StandaloneMemoryTrainer.prototype.getStats = function() {
+    var timeSpent = this._getElapsedTime();
+    var progress = this.state.currentSession.length > 0 ? 
+        Math.round((this.state.learnedCards.length / this.state.currentSession.length) * 100) : 0;
+    return {
+        totalCards: this.state.sessionStats.totalCards,
+        learned: this.state.sessionStats.learned,
+        difficult: this.state.sessionStats.difficult,
+        remaining: this.state.sessionStats.remaining,
+        timeSpent: timeSpent,
+        timeFormatted: this._formatTime(timeSpent),
+        progress: progress,
+        currentCard: this.state.currentCardIndex + 1,
+        totalCardsInSession: this.state.currentSession.length,
+        flippedCards: this.state.flippedCards.size
+    };
+};
+
+StandaloneMemoryTrainer.prototype.endSession = function() {
+    this.state.active = false;
+    var timeSpent = this._getElapsedTime();
+    var totalCards = this.state.currentSession.length;
+    var learnedCards = this.state.learnedCards.length;
+    var difficultCards = this.state.difficultCards.length;
+    var progress = totalCards > 0 ? Math.round((learnedCards / totalCards) * 100) : 0;
+    var message, recommendation;
+    if (progress >= 80) {
+        message = "¡Excelente trabajo! Has aprendido la mayoría de los conceptos.";
+        recommendation = "Puedes repasar las cartas marcadas como difíciles o empezar una nueva sesión.";
+    } else if (progress >= 50) {
+        message = "Buen progreso. Continúa estudiando para mejorar tu dominio.";
+        recommendation = "Enfócate en las cartas marcadas como difíciles en tu próximo estudio.";
+    } else {
+        message = "Es un buen comienzo. Sigue practicando para mejorar.";
+        recommendation = "Te recomendamos repasar más las cartas que aún no dominas.";
+    }
+    // Obtener la lista completa de conceptos difíciles con sus definiciones
+    var difficultConcepts = this.state.difficultCards.map(function(concept) {
+        var card = this.state.currentSession.find(function(c) {
+            return c.concept === concept;
+        });
+        return card ? { 
+            concept: card.concept, 
+            definition: card.definition,
+            important: card.important || false
+        } : null;
+    }.bind(this)).filter(function(item) { return item !== null; });
+    return {
+        sessionTitle: this.sessionTitle,
+        timeSpent: timeSpent,
+        timeFormatted: this._formatTime(timeSpent),
+        totalCards: totalCards,
+        learnedCards: learnedCards,
+        difficultCards: difficultCards,
+        unseenCards: totalCards - learnedCards - difficultCards,
+        progress: progress,
+        message: message,
+        recommendation: recommendation,
+        difficultConcepts: difficultConcepts  // ← INCLUYE TODA LA INFORMACIÓN
+    };
+};
+
+StandaloneMemoryTrainer.prototype.exportConfig = function() {
+    var exportCards = this.cards.map(function(card) {
+        return {
+            concept: card.important ? ("⚠️ " + card.concept) : card.concept,
+            definition: card.important ? ("⚠️ " + card.definition) : card.definition
+        };
+    });
+    return {
+        metadata: {
+            version: "1.0",
+            created: new Date().toISOString(),
+            author: "Memory Trainer",
+            lastModified: new Date().toISOString(),
+            sessionTitle: this.sessionTitle,
+            totalCards: this.cards.length,
+            importantTerms: this.cards.filter(function(c) { return c.important; }).length
+        },
+        config: {
+            sessionTitle: this.sessionTitle,
+            instructions: this.instructions,
+            subject: this.subject || "General",
+            studyMode: this.studyMode,
+            cardsPerSession: this.cardsPerSession,
+            order: this.order,
+            showTimer: this.showTimer,
+            autoFlip: this.autoFlip,
+            enableSound: this.enableSound,
+            showProgress: this.showProgress,
+            customColors: this.customColors
+        },
+        content: {
+            cards: exportCards
+        }
+    };
+};
+
+StandaloneMemoryTrainer.prototype.generateStandaloneHTML = function(options) {
+    return "Función no disponible en standalone";
+};
+
+
+
+// FUNCIONES PRINCIPALES DEL ENTRENADOR
+var trainer = null;
+var currentCard = null;
+var sessionActive = false;
+var autoFlipTimeout = null;
+var timerInterval = null;
+
+// EXPORTAR PARA COMPATIBILIDAD CON EL ENSAMBLADOR
+if (typeof window !== "undefined") {
+    window.MemoryTrainer = StandaloneMemoryTrainer;
+    window.MemoryTrainerManager = {
+        createTrainer: function(config) {
+            return new StandaloneMemoryTrainer(config);
+        }
+    };
+}
+
+function escapeHTML(text) {
+    if (text === null || text === undefined) return "";
+    var div = document.createElement("div");
+    div.textContent = String(text);
+    return div.innerHTML;
+}
+
+function showMessage(message, type) {
+    var messageDiv = document.createElement("div");
+    messageDiv.className = "status-message " + type;
+    var emoji = "ℹ️";
+    if (type === "error") emoji = "❌";
+    else if (type === "warning") emoji = "⚠️";
+    else if (type === "success") emoji = "✅";
+    messageDiv.innerHTML = "<span class=\"emoji\">" + emoji + "</span> " + escapeHTML(message);
+    var trainerContent = document.getElementById("trainerContent");
+    trainerContent.insertBefore(messageDiv, trainerContent.firstChild);
+    setTimeout(function() {
+        if (messageDiv.parentNode) {
+            messageDiv.parentNode.removeChild(messageDiv);
+        }
+    }, 3000);
+}
+
+function initTrainer() {
+    try {
+        var cardsToUse = EMBEDDED_TRAINER_DATA.content.cards || [];
+        if (cardsToUse.length < 1) {
+            showNoCardsScreen("No hay cartas para estudiar");
+            return;
+        }
+        trainer = new StandaloneMemoryTrainer({
+            cards: cardsToUse,
+            sessionTitle: EMBEDDED_TRAINER_DATA.config.sessionTitle || "Sesión de Estudio",
+            instructions: EMBEDDED_TRAINER_DATA.config.instructions || "",
+            studyMode: EMBEDDED_TRAINER_DATA.config.studyMode || "mixed",
+            cardsPerSession: EMBEDDED_TRAINER_DATA.config.cardsPerSession || 20,
+            order: EMBEDDED_TRAINER_DATA.config.order || "sequential",
+            showTimer: EMBEDDED_TRAINER_DATA.config.showTimer !== false,
+            autoFlip: EMBEDDED_TRAINER_DATA.config.autoFlip !== false,
+            enableSound: EMBEDDED_TRAINER_DATA.config.enableSound !== false,
+            showProgress: EMBEDDED_TRAINER_DATA.config.showProgress !== false,
+            customColors: EMBEDDED_TRAINER_DATA.config.customColors || {
+                primary: "#4361ee",
+                cardFront: "#ffffff",
+                cardBack: "#f8f9fa",
+                success: "#06d6a0",
+                warning: "#ffd166",
+                danger: "#ef476f"
+            }
+        });
+        showStartScreen();
+    } catch (error) {
+        console.error("Error:", error);
+        showNoCardsScreen(error.message);
+    }
+}
+
+function showNoCardsScreen(message) {
+    var trainerContent = document.getElementById("trainerContent");
+    var html = "";
+    html += '<div class="no-cards-screen">';
+    html += '<span class="emoji">⚠️</span>';
+    html += '<h2>Error</h2>';
+    html += '<p>' + escapeHTML(message) + '</p>';
+    html += '<button class="btn btn-primary" onclick="location.reload()">';
+    html += '<span class="emoji">🔄</span> Recargar';
+    html += '</button>';
+    html += '</div>';
+    trainerContent.innerHTML = html;
+}
+
+function showStartScreen() {
+    var trainerContent = document.getElementById("trainerContent");
+    var instructions = EMBEDDED_TRAINER_DATA.config.instructions || "Haz clic en las cartas para voltearlas.";
+    var html = "";
+    html += '<div class="start-screen">';
+    html += '<h2><span class="emoji">▶️</span> Comenzar Estudio</h2>';
+    html += '<div class="instructions-box">';
+    html += '<span class="emoji">ℹ️</span>';
+    html += '<p>' + escapeHTML(instructions) + '</p>';
+    html += '</div>';
+    html += '<div class="study-tips">';
+    html += '<h3><span class="emoji">💡</span> Consejos de estudio:</h3>';
+    html += '<ul>';
+    html += '<li><span class="emoji">✅</span> Haz clic en la carta para ver la definición</li>';
+    html += '<li><span class="emoji">⭐</span> Marca como ✓ Aprendida si ya conoces el concepto</li>';
+    html += '<li><span class="emoji">⚠️</span> Marca como ✗ Dificultad si necesitas repasarlo</li>';
+    html += '<li><span class="emoji">🔄</span> Las cartas difíciles aparecerán más veces</li>';
+    html += '<li><span class="emoji">⚡</span> Al marcar una respuesta, automáticamente pasarás a la siguiente</li>';
+    html += '</ul>';
+    html += '</div>';
+    html += '<div class="session-summary">';
+    html += '<div class="summary-item">';
+    html += '<span class="emoji">📚</span>';
+    html += '<span>' + trainer.cards.length + ' cartas disponibles</span>';
+    html += '</div>';
+    html += '<div class="summary-item">';
+    html += '<span class="emoji">⚙️</span>';
+    html += '<span>Modo: ' + (trainer.studyMode === "difficult" ? "Solo difíciles" : "Todas") + '</span>';
+    html += '</div>';
+    html += '<div class="summary-item">';
+    html += '<span class="emoji">🔀</span>';
+    html += '<span>Orden: ' + (trainer.order === "random" ? "Aleatorio" : "Secuencial") + '</span>';
+    html += '</div>';
+    html += '</div>';
+    html += '<div class="controls">';
+    html += '<button class="btn btn-primary btn-large" id="startStudyBtn">';
+    html += '<span class="emoji">▶️</span> Comenzar Estudio';
+    html += '</button>';
+    html += '</div>';
+    html += '</div>';
+    trainerContent.innerHTML = html;
+    document.getElementById("startStudyBtn").addEventListener("click", startStudySession);
+}
+
+function startStudySession() {
+    sessionActive = true;
+    var result = trainer.startSession();
+    if (result.success) {
+        showStudyCard();
+        startTimer();
+    }
+}
+
+function showStudyCard() {
+    currentCard = trainer.getNextCard();
+    if (!currentCard) {
+        endStudySession();
+        return;
+    }
+    var trainerContent = document.getElementById("trainerContent");
+    var card = currentCard.card;
+    var importantBadge = currentCard.isImportant ? '<div class="important-badge"><span class="emoji">⚠️</span> Importante</div>' : "";
+    var statusBadge = "";
+    if (currentCard.status === "learned") {
+        statusBadge = '<div class="status-badge learned"><span class="emoji">✅</span> Aprendida</div>';
+    } else if (currentCard.status === "difficult") {
+        statusBadge = '<div class="status-badge difficult"><span class="emoji">⚠️</span> Dificultad</div>';
+    }
+    var html = "";
+    html += '<div class="study-screen">';
+    html += '<div class="progress-bar-container">';
+    html += '<div class="progress-bar" style="width: ' + currentCard.progress + '%"></div>';
+    html += '<div class="progress-label">Carta ' + currentCard.cardNumber + ' de ' + currentCard.totalCards + ' (' + currentCard.progress + '%)</div>';
+    html += '</div>';
+    html += importantBadge;
+    html += statusBadge;
+    html += '<div class="card-container" id="cardContainer">';
+    html += '<div class="flashcard" id="flashcard">';
+    html += '<div class="card-front" id="cardFront">';
+    html += '<div class="card-content">';
+    html += '<h3>Concepto</h3>';
+    html += '<div class="concept-text">' + escapeHTML(card.concept) + '</div>';
+    html += '</div>';
+    html += '<div class="card-hint">Haz clic para ver la definición</div>';
+    html += '</div>';
+    html += '<div class="card-back" id="cardBack">';
+    html += '<div class="card-content">';
+    html += '<h3>Definición</h3>';
+    html += '<div class="definition-text">' + escapeHTML(card.definition) + '</div>';
+    html += '</div>';
+    html += '<div class="card-hint">Haz clic para ver el concepto</div>';
+    html += '</div>';
+    html += '</div>';
+    html += '</div>';
+    html += '<div class="card-actions">';
+    html += '<button class="btn btn-success" id="markLearnedBtn">';
+    html += '<span class="emoji">✅</span> ✓ Aprendida';
+    html += '</button>';
+    html += '<button class="btn btn-warning" id="markDifficultBtn">';
+    html += '<span class="emoji">⚠️</span> ✗ Dificultad';
+    html += '</button>';
+    html += '<button class="btn btn-secondary" id="resetCardBtn">';
+    html += '<span class="emoji">🔄</span> Reiniciar';
+    html += '</button>';
+    html += '</div>';
+    html += '<div class="session-controls">';
+    html += '<button class="btn btn-danger" id="endSessionBtn">';
+    html += '<span class="emoji">⏹️</span> Terminar Sesión';
+    html += '</button>';
+    html += '</div>';
+    html += '</div>';
+    trainerContent.innerHTML = html;
+    updateUI();
+    var flashcard = document.getElementById("flashcard");
+    if (currentCard.flipped) {
+        flashcard.classList.add("flipped");
+    }
+    flashcard.addEventListener("click", function() {
+        flipCurrentCard();
+    });
+    document.getElementById("markLearnedBtn").addEventListener("click", function() {
+        markCardAsLearnedAndContinue();
+    });
+    document.getElementById("markDifficultBtn").addEventListener("click", function() {
+        markCardAsDifficultAndContinue();
+    });
+    document.getElementById("resetCardBtn").addEventListener("click", function() {
+        resetCardStatus();
+    });
+    document.getElementById("endSessionBtn").addEventListener("click", endStudySession);
+    if (trainer.autoFlip && !currentCard.flipped) {
+        startAutoFlipTimer();
+    }
+}
+
+function flipCurrentCard() {
+    if (!currentCard || !sessionActive) return;
+    var flashcard = document.getElementById("flashcard");
+    var result = trainer.flipCard(currentCard.card.concept);
+    if (result.success) {
+        flashcard.classList.toggle("flipped");
+        if (trainer.enableSound) {
+            playFlipSound();
+        }
+        clearAutoFlipTimer();
+    }
+}
+
+function markCardAsLearnedAndContinue() {
+    if (!currentCard || !sessionActive) return;
+    var result = trainer.markAsLearned(currentCard.card.concept);
+    if (result.success) {
+        showMessage("✅ Marcada como aprendida - Pasando a la siguiente...", "success");
+        updateUI();
+        setTimeout(function() {
+            if (trainer.nextCard()) {
+                showStudyCard();
+            } else {
+                endStudySession();
+            }
+        }, 800);
+    }
+}
+
+function markCardAsDifficultAndContinue() {
+    if (!currentCard || !sessionActive) return;
+    var result = trainer.markAsDifficult(currentCard.card.concept);
+    if (result.success) {
+        showMessage("⚠️ Marcada como difícil - Pasando a la siguiente...", "warning");
+        updateUI();
+        setTimeout(function() {
+            if (trainer.nextCard()) {
+                showStudyCard();
+            } else {
+                endStudySession();
+            }
+        }, 800);
+    }
+}
+
+function resetCardStatus() {
+    if (!currentCard || !sessionActive) return;
+    var result = trainer.resetCard(currentCard.card.concept);
+    if (result.success) {
+        showMessage("🔄 Estado de la carta reiniciado", "info");
+        updateUI();
+    }
+}
+
+function startAutoFlipTimer() {
+    if (!trainer.autoFlip) return;
+    clearAutoFlipTimer();
+    autoFlipTimeout = setTimeout(function() {
+        if (sessionActive && currentCard && !currentCard.flipped) {
+            flipCurrentCard();
+        }
+    }, 5000);
+}
+
+function clearAutoFlipTimer() {
+    if (autoFlipTimeout) {
+        clearTimeout(autoFlipTimeout);
+        autoFlipTimeout = null;
+    }
+}
+
+function startTimer() {
+    if (!trainer.showTimer) return;
+    clearInterval(timerInterval);
+    timerInterval = setInterval(updateTimer, 1000);
+}
+
+function updateTimer() {
+    if (!sessionActive) {
+        clearInterval(timerInterval);
+        return;
+    }
+    var stats = trainer.getStats();
+    document.getElementById("timeDisplay").textContent = stats.timeFormatted;
+}
+
+function updateUI() {
+    if (!sessionActive) return;
+    var stats = trainer.getStats();
+    document.getElementById("learnedDisplay").textContent = stats.learned;
+    if (trainer.showTimer) {
+        document.getElementById("timeDisplay").textContent = stats.timeFormatted;
+    }
+}
+
+function playFlipSound() {
+    try {
+        var audioContext = new (window.AudioContext || window.webkitAudioContext)();
+        var oscillator = audioContext.createOscillator();
+        var gainNode = audioContext.createGain();
+        oscillator.connect(gainNode);
+        gainNode.connect(audioContext.destination);
+        oscillator.frequency.value = 523.25;
+        gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
+        gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.5);
+        oscillator.start(audioContext.currentTime);
+        oscillator.stop(audioContext.currentTime + 0.5);
+    } catch (e) {
+        // Silenciar error si AudioContext no está disponible
+    }
+}
+
+function endStudySession() {
+    sessionActive = false;
+    clearAutoFlipTimer();
+    clearInterval(timerInterval);
+    var results = trainer.endSession();
+    showResultsScreen(results);
+}
+
+function showResultsScreen(results) {
+    var trainerContent = document.getElementById("trainerContent");
+    var html = "";
+    html += '<div class="results-screen">';
+    html += '<h2><span class="emoji">🏆</span> Sesión Completada</h2>';
+    html += '<div class="results-message">' + escapeHTML(results.message) + '</div>';
+    html += '<div class="results-recommendation">' + escapeHTML(results.recommendation) + '</div>';
+    html += '<div class="results-stats">';
+    html += '<div class="stat-card">';
+    html += '<div class="stat-icon"><span class="emoji">⏱️</span></div>';
+    html += '<div class="stat-value">' + escapeHTML(results.timeFormatted) + '</div>';
+    html += '<div class="stat-label">Tiempo</div>';
+    html += '</div>';
+    html += '<div class="stat-card">';
+    html += '<div class="stat-icon"><span class="emoji">✅</span></div>';
+    html += '<div class="stat-value">' + results.learnedCards + '</div>';
+    html += '<div class="stat-label">Aprendidas</div>';
+    html += '</div>';
+    html += '<div class="stat-card">';
+    html += '<div class="stat-icon"><span class="emoji">⚠️</span></div>';
+    html += '<div class="stat-value">' + results.difficultCards + '</div>';
+    html += '<div class="stat-label">Difíciles</div>';
+    html += '</div>';
+    html += '<div class="stat-card">';
+    html += '<div class="stat-icon"><span class="emoji">📊</span></div>';
+    html += '<div class="stat-value">' + results.progress + '%</div>';
+    html += '<div class="stat-label">Progreso</div>';
+    html += '</div>';
+    html += '</div>';
+    if (results.difficultConcepts && results.difficultConcepts.length > 0) {
+        html += '<div class="difficult-concepts">';
+        html += '<h3><span class="emoji">⚠️</span> Conceptos marcados como difíciles</h3>';
+        html += '<p>Estos son los conceptos que deberías repasar en tu próxima sesión:</p>';
+        html += '<div class="concepts-list">';
+        // Generar cada concepto difícil
+        results.difficultConcepts.forEach(function(item) {
+            var importantTag = item.important ? '<span class="important-tag">IMPORTANTE</span>' : "";
+            html += '<div class="concept-item">';
+            html += '<div class="concept-header">';
+            html += '<span class="emoji">📌</span>';
+            html += '<div class="concept-title">' + escapeHTML(item.concept) + '</div>';
+            html += importantTag;
+            html += '</div>';
+            html += '<div class="definition-content">';
+            html += '<strong>Definición:</strong> ' + escapeHTML(item.definition);
+            html += '</div>';
+            html += '</div>';
+        });
+        html += '</div>';
+        html += '</div>';
+    } else {
+        html += '<div class="difficult-concepts">';
+        html += '<h3><span class="emoji">🎉</span> ¡Excelente trabajo!</h3>';
+        html += '<div class="no-difficult-concepts">';
+        html += '<span class="emoji">✅</span>';
+        html += '<p>No hay conceptos marcados como difíciles. ¡Has dominado todos los conceptos de esta sesión!</p>';
+        html += '</div>';
+        html += '</div>';
+    }
+    html += '<div class="controls">';
+    html += '<button class="btn btn-primary" id="restartSessionBtn">';
+    html += '<span class="emoji">🔄</span> Nueva Sesión';
+    html += '</button>';
+    html += '<button class="btn btn-secondary" id="mainMenuBtn">';
+    html += '<span class="emoji">🏠</span> Menú Principal';
+    html += '</button>';
+    html += '</div>';
+    html += '</div>';
+    trainerContent.innerHTML = html;
+    document.getElementById("restartSessionBtn").addEventListener("click", function() {
+        startStudySession();
+    });
+    document.getElementById("mainMenuBtn").addEventListener("click", showStartScreen);
+}
+
+// INICIALIZAR CUANDO SE CARGA LA PÁGINA
+document.addEventListener("DOMContentLoaded", function() {
+    initTrainer();
+});
+
+    </script>
+</body>
+</html>

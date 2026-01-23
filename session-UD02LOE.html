@@ -1,0 +1,2009 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>session-UD02-LOE </title>
+    <style>
+/* Estilos del Memory Trainer - MODIFICADO SIN BOTONES ANTERIOR/SIGUIENTE */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            color: #1e293b;
+            line-height: 1.5;
+        }
+
+        .memory-trainer-container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            width: 100%;
+            max-width: 800px;
+            min-height: 600px;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .trainer-header {
+            background: linear-gradient(135deg, #EC4899, #d83485);
+            color: white;
+            padding: 25px;
+            text-align: center;
+            border-bottom: 3px solid rgba(255,255,255,0.2);
+        }
+
+        .trainer-header h1 {
+            font-size: 28px;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+        }
+
+        .stats-bar {
+            display: flex;
+            justify-content: space-around;
+            background: rgba(0,0,0,0.1);
+            padding: 15px;
+            margin-top: 10px;
+            border-radius: 10px;
+        }
+
+        .stat { text-align: center; flex: 1; }
+        .stat-label { font-size: 12px; opacity: 0.8; text-transform: uppercase; margin-bottom: 5px; }
+        .stat-value { font-size: 24px; font-weight: bold; margin-top: 5px; }
+
+        .trainer-content {
+            padding: 30px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 400px;
+            flex: 1;
+        }
+
+        .start-screen { text-align: center; animation: fadeIn 0.5s; width: 100%; max-width: 600px; }
+        .start-screen h2 { color: #EC4899; margin-bottom: 20px; font-size: 32px; display: flex; align-items: center; justify-content: center; gap: 12px; }
+
+        .instructions-box {
+            background: #f8f9fa;
+            border: 2px solid #e9ecef;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 25px;
+            text-align: left;
+            display: flex;
+            align-items: flex-start;
+            gap: 15px;
+        }
+
+        .instructions-box i {
+            color: #EC4899;
+            font-size: 24px;
+            margin-top: 2px;
+        }
+
+        .instructions-box p {
+            margin: 0;
+            color: #495057;
+            line-height: 1.6;
+        }
+
+        .study-tips {
+            background: #e7f5ff;
+            border: 2px solid #a5d8ff;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 25px;
+            text-align: left;
+        }
+
+        .study-tips h3 {
+            color: #EC4899;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .study-tips ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .study-tips li {
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: #495057;
+        }
+
+        .study-tips li i {
+            color: #EC4899;
+            font-size: 16px;
+        }
+
+        .session-summary {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            margin: 25px 0;
+            flex-wrap: wrap;
+        }
+
+        .summary-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: #f8f9fa;
+            padding: 12px 18px;
+            border-radius: 10px;
+            border: 1px solid #e9ecef;
+            font-size: 14px;
+        }
+
+        .summary-item i {
+            color: #EC4899;
+        }
+
+        .study-screen { width: 100%; animation: fadeIn 0.5s; }
+
+        .progress-bar-container {
+            width: 100%;
+            height: 12px;
+            background: #e5e7eb;
+            border-radius: 6px;
+            overflow: hidden;
+            margin-bottom: 20px;
+            position: relative;
+        }
+
+        .progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, #EC4899, #ff5cad);
+            width: 0%;
+            transition: width 0.5s;
+        }
+
+        .progress-label {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 11px;
+            font-weight: 600;
+            color: #EC4899;
+        }
+
+        .important-badge {
+            background: linear-gradient(135deg, #ffd166, #f59e0b);
+            color: #92400e;
+            padding: 8px 16px;
+            border-radius: 20px;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 15px;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        .status-badge {
+            padding: 8px 16px;
+            border-radius: 20px;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 15px;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        .status-badge.learned {
+            background: linear-gradient(135deg, #EC4899, #10b981);
+            color: #065f46;
+        }
+
+        .status-badge.difficult {
+            background: linear-gradient(135deg, #ef476f, #ef4444);
+            color: #7f1d1d;
+        }
+
+        .card-container {
+            perspective: 1000px;
+            width: 100%;
+            max-width: 500px;
+            height: 300px;
+            margin: 20px auto;
+        }
+
+        .flashcard {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            transform-style: preserve-3d;
+            transition: transform 0.6s;
+            cursor: pointer;
+        }
+
+        .flashcard.flipped {
+            transform: rotateY(180deg);
+        }
+
+        .card-front, .card-back {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden;
+            border-radius: 15px;
+            padding: 30px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+
+        .card-front {
+            background: #FFFFFF;
+            border: 3px solid #EC4899;
+            color: #1e293b;
+        }
+
+        .card-back {
+            background: #FFF0EB;
+            border: 3px solid #06d6a0;
+            color: #1e293b;
+            transform: rotateY(180deg);
+        }
+
+        .card-content {
+            text-align: center;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .card-content h3 {
+            font-size: 18px;
+            color: #6b7280;
+            margin-bottom: 20px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .concept-text, .definition-text {
+            font-size: 28px;
+            font-weight: 600;
+            line-height: 1.4;
+            word-break: break-word;
+            max-height: 180px;
+            overflow-y: auto;
+            padding: 10px;
+            width: 100%;
+        }
+
+        .card-hint {
+            font-size: 14px;
+            color: #9ca3af;
+            font-style: italic;
+            margin-top: 15px;
+        }
+
+        .card-actions {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin: 25px 0;
+            flex-wrap: wrap;
+        }
+
+        .session-controls {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 10px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            min-width: 140px;
+            justify-content: center;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #EC4899, #e23e8f);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(236, 72, 153, 0.4);
+        }
+
+        .btn-secondary {
+            background: #f3f4f6;
+            color: #374151;
+            border: 2px solid #d1d5db;
+        }
+
+        .btn-secondary:hover {
+            background: #e5e7eb;
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, #EC4899, #10b981);
+            color: white;
+        }
+
+        .btn-success:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(16, 185, 129, 0.4);
+        }
+
+        .btn-warning {
+            background: linear-gradient(135deg, #ffd166, #f59e0b);
+            color: #92400e;
+        }
+
+        .btn-warning:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(245, 158, 11, 0.4);
+        }
+
+        .btn-danger {
+            background: linear-gradient(135deg, #ef476f, #ef4444);
+            color: white;
+        }
+
+        .btn-danger:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(239, 68, 68, 0.4);
+        }
+
+        .btn-large {
+            padding: 15px 40px;
+            font-size: 18px;
+        }
+
+        .results-screen {
+            text-align: center;
+            animation: fadeIn 0.5s;
+            width: 100%;
+            max-width: 700px;
+        }
+
+        .results-screen h2 {
+            color: #EC4899;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+        }
+
+        .results-message {
+            font-size: 18px;
+            color: #374151;
+            margin-bottom: 15px;
+            line-height: 1.5;
+        }
+
+        .results-recommendation {
+            background: #f0f9ff;
+            border: 2px solid #a5d8ff;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 25px;
+            color: #1c7ed6;
+            font-size: 16px;
+        }
+
+        .results-stats {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+            margin: 30px 0;
+        }
+
+        @media (min-width: 768px) {
+            .results-stats {
+                grid-template-columns: repeat(4, 1fr);
+            }
+        }
+
+        .stat-card {
+            background: white;
+            border: 2px solid #e5e7eb;
+            border-radius: 15px;
+            padding: 20px;
+            text-align: center;
+            transition: transform 0.3s;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+            border-color: #EC4899;
+        }
+
+        .stat-icon {
+            font-size: 32px;
+            color: #EC4899;
+            margin-bottom: 10px;
+        }
+
+        .stat-value {
+            font-size: 32px;
+            font-weight: bold;
+            color: #1e293b;
+            margin-bottom: 5px;
+        }
+
+        .stat-label {
+            font-size: 14px;
+            color: #6b7280;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        /* NUEVOS ESTILOS PARA LA LISTA DE CONCEPTOS DIFÍCILES */
+        .difficult-concepts {
+            background: #fef3c7;
+            border: 2px solid #f59e0b;
+            border-radius: 10px;
+            padding: 25px;
+            margin: 25px 0;
+            text-align: left;
+            width: 100%;
+            max-width: 700px;
+        }
+
+        .difficult-concepts h3 {
+            color: #92400e;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 22px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #fbbf24;
+        }
+
+        .difficult-concepts p {
+            color: #78350f;
+            margin-bottom: 15px;
+            font-size: 16px;
+        }
+
+        .concepts-list {
+            margin-top: 15px;
+            max-height: 300px;
+            overflow-y: auto;
+            padding-right: 5px;
+        }
+
+        .concept-item {
+            background: white;
+            border: 1px solid #fcd34d;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            overflow: hidden;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+            transition: transform 0.2s;
+        }
+
+        .concept-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
+
+        .concept-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 15px;
+            background: #fef3c7;
+            border-bottom: 1px solid #fcd34d;
+        }
+
+        .concept-header .emoji {
+            color: #d97706;
+            font-size: 18px;
+        }
+
+        .concept-title {
+            font-weight: bold;
+            color: #92400e;
+            font-size: 18px;
+        }
+
+        .important-tag {
+            background: #f59e0b;
+            color: white;
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: bold;
+            margin-left: auto;
+        }
+
+        .definition-content {
+            padding: 15px;
+            background: #fffbeb;
+            color: #78350f;
+            line-height: 1.6;
+            font-size: 15px;
+        }
+
+        .definition-content strong {
+            color: #92400e;
+        }
+
+        .no-difficult-concepts {
+            text-align: center;
+            padding: 20px;
+            color: #6b7280;
+            font-style: italic;
+            border: 2px dashed #d1d5db;
+            border-radius: 8px;
+            background: #f9fafb;
+            margin: 15px 0;
+        }
+
+        .no-difficult-concepts .emoji {
+            font-size: 24px;
+            margin-bottom: 10px;
+            display: block;
+        }
+
+        .status-message {
+            padding: 15px;
+            border-radius: 8px;
+            margin: 15px 0;
+            text-align: center;
+            font-weight: 500;
+            animation: fadeIn 0.3s;
+        }
+
+        .status-message.success {
+            background: #d1fae5;
+            color: #065f46;
+            border: 2px solid #10b981;
+        }
+
+        .status-message.error {
+            background: #fee2e2;
+            color: #7f1d1d;
+            border: 2px solid #ef4444;
+        }
+
+        .status-message.warning {
+            background: #fef3c7;
+            color: #92400e;
+            border: 2px solid #f59e0b;
+        }
+
+        .status-message.info {
+            background: #dbeafe;
+            color: #1e40af;
+            border: 2px solid #3b82f6;
+        }
+
+        .no-cards-screen {
+            text-align: center;
+            padding: 40px;
+            animation: fadeIn 0.5s;
+        }
+
+        .no-cards-screen i {
+            font-size: 60px;
+            color: #9ca3af;
+            margin-bottom: 20px;
+        }
+
+        .no-cards-screen h2 {
+            color: #EC4899;
+            margin-bottom: 15px;
+        }
+
+        .no-cards-screen p {
+            color: #6b7280;
+            margin-bottom: 30px;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes flip {
+            0% { transform: rotateY(0); }
+            100% { transform: rotateY(180deg); }
+        }
+
+        @media (max-width: 768px) {
+            .memory-trainer-container {
+                border-radius: 15px;
+                min-height: 500px;
+            }
+            
+            .trainer-header {
+                padding: 20px;
+            }
+            
+            .trainer-header h1 {
+                font-size: 24px;
+            }
+            
+            .card-container {
+                height: 250px;
+            }
+            
+            .concept-text, .definition-text {
+                font-size: 22px;
+            }
+            
+            .btn {
+                min-width: 120px;
+                padding: 10px 20px;
+                font-size: 14px;
+            }
+            
+            .results-stats {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .difficult-concepts {
+                padding: 20px;
+            }
+            
+            .concept-title {
+                font-size: 16px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .trainer-content {
+                padding: 20px;
+            }
+            
+            .card-container {
+                height: 200px;
+            }
+            
+            .concept-text, .definition-text {
+                font-size: 18px;
+            }
+            
+            .card-actions {
+                flex-direction: column;
+            }
+            
+            .btn {
+                width: 100%;
+                max-width: 250px;
+            }
+            
+            .results-stats {
+                grid-template-columns: 1fr;
+            }
+            
+            .difficult-concepts h3 {
+                font-size: 18px;
+            }
+            
+            .concept-header {
+                flex-wrap: wrap;
+            }
+            
+            .important-tag {
+                margin-top: 5px;
+                margin-left: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="memory-trainer-container" id="trainerContainer">
+        <div class="trainer-header">
+            <h1>🧠 session-UD02-LOE </h1>
+            <div class="stats-bar">
+                <div class="stat">
+                    <div class="stat-label">Aprendidas</div>
+                    <div class="stat-value" id="learnedDisplay">0</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-label">Tiempo</div>
+                    <div class="stat-value" id="timeDisplay">0:00</div>
+                </div>
+            </div>
+        </div>
+        <div class="trainer-content" id="trainerContent">
+            <!-- El contenido se carga dinámicamente -->
+        </div>
+    </div>
+    <script>
+        // ==============================================
+        // DATOS DE LA SESIÓN EMBEBIDOS
+        // ==============================================
+        var EMBEDDED_TRAINER_DATA = {
+  "metadata": {
+    "version": "1.0",
+    "created": "2026-01-23T10:19:10.117Z",
+    "author": "Memory Trainer",
+    "tags": [],
+    "lastModified": "2026-01-23T10:19:10.117Z",
+    "sessionTitle": "session-UD02-LOE ",
+    "totalCards": 102,
+    "importantTerms": 80
+  },
+  "config": {
+    "sessionTitle": "session-UD02-LOE ",
+    "instructions": "Haz clic en las cartas para voltearlas. Marca las que ya conoces como ✓ Aprendidas y las que necesitas repasar como ✗ Dificultad.",
+    "subject": "General",
+    "studyMode": "mixed",
+    "cardsPerSession": 102,
+    "order": "random",
+    "showTimer": true,
+    "autoFlip": true,
+    "enableSound": true,
+    "showProgress": true,
+    "customColors": {
+      "primary": "#EC4899",
+      "cardFront": "#FFFFFF",
+      "cardBack": "#FFF0EB",
+      "success": "#EC4899",
+      "warning": "#ffd166",
+      "danger": "#ef476f"
+    }
+  },
+  "content": {
+    "cards": [
+      {
+        "concept": "⚠️ ️ Absorción y compensación del salario",
+        "definition": "⚠️ ️ Práctica que permite compensar las subidas salariales fijadas en convenio con otras cantidades que el empresario paga voluntariamente al trabajador en nómina"
+      },
+      {
+        "concept": "Accidente de trabajo in itínere",
+        "definition": "Accidente que sufre el trabajador al ir o al volver del trabajo"
+      },
+      {
+        "concept": "⚠️ ️ Arbitraje",
+        "definition": "⚠️ ️ Sistema de solución extrajudicial donde un árbitro toma una decisión vinculante para ambas partes en conflicto, conocida como laudo arbitral"
+      },
+      {
+        "concept": "⚠️ ️ Asamblea de trabajadores",
+        "definition": "⚠️ ️ Reunión de los trabajadores de una misma empresa o centro de trabajo que se realiza fuera de las horas de trabajo, salvo acuerdo con el empresario"
+      },
+      {
+        "concept": "⚠️ ️ Base de cotización",
+        "definition": "⚠️ ️ Cantidad de la nómina por la que se debe cotizar a la Seguridad Social para tener derecho a las prestaciones del sistema"
+      },
+      {
+        "concept": "Bonificaciones a la contratación",
+        "definition": "Reducciones en las cotizaciones sociales que el Gobierno ofrece para incentivar la contratación de determinados colectivos o tipos de contratos"
+      },
+      {
+        "concept": "⚠️ ️ CEPYME",
+        "definition": "⚠️ ️ Confederación Española de la Pequeña y Mediana Empresa, organización empresarial más representativa a nivel estatal junto con CEOE"
+      },
+      {
+        "concept": "⚠️ ️ CEOE",
+        "definition": "⚠️ ️ Confederación Española de Organizaciones Empresariales, organización empresarial más representativa a nivel estatal"
+      },
+      {
+        "concept": "⚠️ ️ Cierre patronal",
+        "definition": "⚠️ ️ Medida utilizada por la empresa que consiste en cerrar el centro de trabajo para impedir el acceso a los trabajadores en casos de ocupación violenta o huelga abusiva"
+      },
+      {
+        "concept": "⚠️ ️ Complementos extrasalariales",
+        "definition": "⚠️ ️ Retribuciones no salariales que compensan gastos que tienen los trabajadores por realizar el trabajo, como transporte, dietas o locomoción"
+      },
+      {
+        "concept": "⚠️ ️ Complementos salariales",
+        "definition": "⚠️ ️ Retribuciones que se añaden al salario base en función de características personales del trabajador, del puesto de trabajo o del rendimiento"
+      },
+      {
+        "concept": "⚠️ ️ Comité de empresa",
+        "definition": "⚠️ ️ Órgano de representación colegiado de los trabajadores en las empresas o centros de trabajo con 50 o más trabajadores"
+      },
+      {
+        "concept": "Comité de empresa europeo",
+        "definition": "Órgano que se puede crear en empresas con centros en distintos países europeos, con funciones de información y consulta"
+      },
+      {
+        "concept": "Comité intercentros",
+        "definition": "Órgano formado por máximo trece miembros designados de entre los componentes de los comités de los distintos centros de trabajo de una empresa"
+      },
+      {
+        "concept": "⚠️ ️ Conciliación",
+        "definition": "⚠️ ️ Sistema de solución extrajudicial donde un conciliador intenta que las partes alcancen un acuerdo mutuo sin proponer soluciones específicas"
+      },
+      {
+        "concept": "⚠️ ️ Contrato de formación en alternancia",
+        "definition": "⚠️ ️ Contrato donde se alterna la actividad laboral retribuida con la formación universitaria o de FP, para personas sin la titulación correspondiente"
+      },
+      {
+        "concept": "⚠️ ️ Contrato de jubilación parcial",
+        "definition": "⚠️ ️ Contrato donde un trabajador a tiempo completo que puede acceder a la pensión convierte su contrato en parcial, pasando a cobrar una jubilación parcial"
+      },
+      {
+        "concept": "⚠️ ️ Contrato de relevo",
+        "definition": "⚠️ ️ Contrato para sustituir la jornada que reduce un trabajador que se jubila parcialmente, pudiendo ser a tiempo parcial o completo"
+      },
+      {
+        "concept": "⚠️ ️ Contrato de trabajo",
+        "definition": "⚠️ ️ Acuerdo entre trabajador y empresario donde se establecen las condiciones laborales, requiriendo consentimiento, objeto lícito y causa válida"
+      },
+      {
+        "concept": "⚠️ ️ Contrato fijo discontinuo",
+        "definition": "⚠️ ️ Contrato indefinido para trabajos estacionales, de temporada o intermitentes que requieren llamamiento del trabajador cuando se reanuda la actividad"
+      },
+      {
+        "concept": "⚠️ ️ Contrato indefinido",
+        "definition": "⚠️ ️ Contrato sin fecha de finalización que puede realizarse con cualquier empresa y trabajador, tanto a tiempo completo como parcial"
+      },
+      {
+        "concept": "⚠️ ️ Contrato para circunstancias de la producción",
+        "definition": "⚠️ ️ Contrato temporal para cubrir incrementos ocasionales e imprevisibles de la actividad o desajustes temporales entre empleo disponible y necesario"
+      },
+      {
+        "concept": "⚠️ ️ Contrato para la obtención de la práctica profesional",
+        "definition": "⚠️ ️ Contrato para realizar trabajo retribuido que facilite la práctica profesional de una titulación, dentro de los 3 años siguientes a terminar los estudios"
+      },
+      {
+        "concept": "⚠️ ️ Contrato para sustitución",
+        "definition": "⚠️ ️ Contrato temporal para sustituir a un trabajador con reserva de puesto, completar jornada reducida o cubrir proceso de selección de vacante"
+      },
+      {
+        "concept": "⚠️ ️ Contrato temporal",
+        "definition": "⚠️ ️ Contrato con fecha de finalización determinada, pudiendo ser por circunstancias de la producción o por sustitución de persona trabajadora"
+      },
+      {
+        "concept": "⚠️ ️ Crédito horario",
+        "definition": "⚠️ ️ Horas retribuidas dentro de la jornada laboral que tienen los representantes de los trabajadores para realizar sus funciones sindicales"
+      },
+      {
+        "concept": "⚠️ ️ Cuota de Seguridad Social",
+        "definition": "⚠️ ️ Resultado de aplicar el tipo de cotización a la base de cotización, que se debe ingresar en la Tesorería General"
+      },
+      {
+        "concept": "Delegados de personal",
+        "definition": "Representantes de los trabajadores en empresas o centros de trabajo con más de 10 y menos de 50 trabajadores"
+      },
+      {
+        "concept": "Delegados sindicales",
+        "definition": "Representantes del sindicato dentro de la empresa elegidos por los afiliados, con derecho a asistir a reuniones del comité con voz pero sin voto"
+      },
+      {
+        "concept": "⚠️ ️ Descuelgue salarial",
+        "definition": "⚠️ ️ Cláusula que permite a las empresas no aplicar las subidas salariales previstas en el convenio colectivo en caso de pérdidas económicas"
+      },
+      {
+        "concept": "⚠️ ️ Desplazamiento temporal",
+        "definition": "⚠️ ️ Cambio de centro de trabajo que no supera el año en un periodo de 3 años, requiriendo preaviso mínimo de 5 días si supera 3 meses"
+      },
+      {
+        "concept": "⚠️ ️ Despido colectivo",
+        "definition": "⚠️ ️ Despido por razones económicas, técnicas, organizativas o de producción que afecta a un número determinado de trabajadores en 90 días"
+      },
+      {
+        "concept": "⚠️ ️ Despido disciplinario",
+        "definition": "⚠️ ️ Extinción del contrato basada en incumplimiento grave y culpable del trabajador, sin derecho a indemnización si es procedente"
+      },
+      {
+        "concept": "⚠️ ️ Despido improcedente",
+        "definition": "⚠️ ️ Despido donde no queda acreditado el incumplimiento del trabajador o falta la carta de despido, con indemnización de 33 días por año"
+      },
+      {
+        "concept": "⚠️ ️ Despido nulo",
+        "definition": "⚠️ ️ Despido por discriminación, violación de derechos fundamentales o motivos protegidos, obligando a la readmisión del trabajador y pago de salarios de tramitación"
+      },
+      {
+        "concept": "⚠️ ️ Despido por causas objetivas",
+        "definition": "⚠️ ️ Extinción del contrato por ineptitud, falta de adaptación, finalización de contrata o amortización de puestos, con indemnización de 20 días por año"
+      },
+      {
+        "concept": "⚠️ ️ Despido procedente",
+        "definition": "⚠️ ️ Extinción del contrato donde existe causa justificada que ha quedado acreditada en juicio, sin indemnización para el trabajador"
+      },
+      {
+        "concept": "⚠️ ️ Dimisión",
+        "definition": "⚠️ ️ Decisión voluntaria del trabajador de finalizar el contrato avisando con antelación según convenio, sin derecho a indemnización"
+      },
+      {
+        "concept": "⚠️ ️ Distribución irregular de jornada",
+        "definition": "⚠️ ️ Sistema donde la empresa puede distribuir hasta el 10% de las horas anuales aumentando jornada en determinadas épocas y compensando con descanso en otras"
+      },
+      {
+        "concept": "⚠️ ️ Empresas de trabajo temporal",
+        "definition": "⚠️ ️ Empresas cuya actividad consiste en poner a disposición de otra empresa trabajadores por ella contratados con carácter temporal"
+      },
+      {
+        "concept": "⚠️ ️ ERE",
+        "definition": "⚠️ ️ Expediente de Regulación de Empleo, procedimiento para despido colectivo que requiere periodo de consultas con representantes y comunicación a Autoridad Laboral"
+      },
+      {
+        "concept": "⚠️ ️ ERTE",
+        "definition": "⚠️ ️ Expediente de Regulación Temporal de Empleo que suspende temporalmente los contratos por causas objetivas o fuerza mayor, cobrando trabajadores prestación por desempleo"
+      },
+      {
+        "concept": "⚠️ ️ Excedencia",
+        "definition": "⚠️ ️ Suspensión temporal de la relación laboral donde el trabajador deja de prestar servicios conservando el vínculo laboral y en ciertos casos la reserva de puesto"
+      },
+      {
+        "concept": "⚠️ ️ Excedencia forzosa",
+        "definition": "⚠️ ️ Suspensión del contrato cuando el trabajador es elegido para cargo público o sindical que imposibilite la asistencia al trabajo"
+      },
+      {
+        "concept": "⚠️ ️ Excedencia por cuidado de familiares",
+        "definition": "⚠️ ️ Suspensión del contrato de máximo 2 años para cuidar familiar hasta 2º grado que no pueda valerse por sí mismo, con reserva de puesto el primer año"
+      },
+      {
+        "concept": "⚠️ ️ Excedencia por cuidado de hijos",
+        "definition": "⚠️ ️ Suspensión del contrato para cuidar menores de 3 años, con reserva de puesto el primer año y de grupo profesional el segundo y tercero"
+      },
+      {
+        "concept": "⚠️ ️ Excedencia voluntaria",
+        "definition": "⚠️ ️ Suspensión del contrato solicitada por el trabajador con al menos un año de antigüedad, sin reserva de puesto pero con preferencia de reingreso"
+      },
+      {
+        "concept": "⚠️ ️ Finiquito",
+        "definition": "⚠️ ️ Cantidad de dinero que una empresa debe pagar a un empleado cuando finaliza la relación laboral, incluyendo salario pendiente, vacaciones e indemnización en su caso"
+      },
+      {
+        "concept": "⚠️ ️ FOGASA",
+        "definition": "⚠️ ️ Fondo de Garantía Salarial, organismo autónomo que garantiza parcialmente a los trabajadores salarios e indemnizaciones pendientes en caso de insolvencia empresarial"
+      },
+      {
+        "concept": "Grupo profesional",
+        "definition": "Agrupación de aptitudes profesionales y titulaciones por su semejanza, formado por varias categorías profesionales"
+      },
+      {
+        "concept": "⚠️ ️ Horas complementarias",
+        "definition": "⚠️ ️ Horas adicionales en contratos a tiempo parcial hasta el 30% de la jornada pactada, ampliable por convenio hasta el 60%"
+      },
+      {
+        "concept": "⚠️ ️ Horas extraordinarias",
+        "definition": "⚠️ ️ Cada hora de trabajo efectivo que se realiza sobrepasando la duración máxima de la jornada ordinaria, con límite de 80 al año"
+      },
+      {
+        "concept": "⚠️ ️ Huelga",
+        "definition": "⚠️ ️ Derecho fundamental que consiste en la suspensión de la prestación laboral para defender intereses de los trabajadores"
+      },
+      {
+        "concept": "Huelga abusiva",
+        "definition": "Huelga ilegal por su modalidad, incluyendo las rotatorias, estratégicas, de celo o a la japonesa"
+      },
+      {
+        "concept": "Incapacidad temporal",
+        "definition": "Situación de baja laboral donde el trabajador suspende su contrato cobrando prestación por enfermedad o accidente"
+      },
+      {
+        "concept": "⚠️ ️ Indemnización por despido",
+        "definition": "⚠️ ️ Cantidad económica que recibe el trabajador cuando finaliza su contrato por decisión empresarial, variando según el tipo de despido"
+      },
+      {
+        "concept": "IRPF",
+        "definition": "Impuesto sobre la Renta de las Personas Físicas, tributo que se retiene mensualmente de la nómina como anticipo a cuenta de la declaración anual"
+      },
+      {
+        "concept": "⚠️ ️ Jornada laboral",
+        "definition": "⚠️ ️ Tiempo diario, semanal o anual que un trabajador dedica a la ejecución de su actividad laboral, con máximo de 40 horas semanales"
+      },
+      {
+        "concept": "Ley Rider",
+        "definition": "Ley 12/2021 que establece la presunción de laboralidad para trabajadores de plataformas digitales de reparto a domicilio"
+      },
+      {
+        "concept": "⚠️ ️ Libertad sindical",
+        "definition": "⚠️ ️ Derecho fundamental de los trabajadores a afiliarse o no a un sindicato, reconocido en la Constitución desde 1978"
+      },
+      {
+        "concept": "Llamamiento",
+        "definition": "Comunicación obligatoria del empresario al trabajador fijo discontinuo cuando se reanuda la actividad estacional o intermitente"
+      },
+      {
+        "concept": "⚠️ ️ Mediación",
+        "definition": "⚠️ ️ Sistema de solución extrajudicial donde el mediador propone soluciones intentando lograr un acuerdo satisfactorio para ambas partes"
+      },
+      {
+        "concept": "Mecanismo de equidad intergeneracional",
+        "definition": "Cotización adicional del 0,70% total introducida en 2023 para el sostenimiento del sistema de pensiones"
+      },
+      {
+        "concept": "⚠️ ️ Modificación funcional",
+        "definition": "⚠️ ️ Cambio del puesto de trabajo del trabajador dentro o fuera de su grupo profesional por causas organizativas o técnicas"
+      },
+      {
+        "concept": "⚠️ ️ Modificación geográfica",
+        "definition": "⚠️ ️ Cambio de centro de trabajo que conlleva cambio de residencia, pudiendo ser traslado definitivo o desplazamiento temporal"
+      },
+      {
+        "concept": "⚠️ ️ Modificación sustancial de condiciones de trabajo",
+        "definition": "⚠️ ️ Cambio de jornada, horario, turnos, retribución, sistema de trabajo o grupo profesional que requiere justificación y preaviso de 15 días"
+      },
+      {
+        "concept": "⚠️ ️ Movilidad funcional",
+        "definition": "⚠️ ️ Capacidad de la empresa de cambiar al trabajador de puesto dentro del grupo profesional o temporalmente fuera de él"
+      },
+      {
+        "concept": "⚠️ ️ Negociación colectiva",
+        "definition": "⚠️ ️ Proceso de negociación entre representantes de trabajadores y empresarios para establecer condiciones laborales mediante convenios"
+      },
+      {
+        "concept": "⚠️ ️ Nómina",
+        "definition": "⚠️ ️ Documento donde figura el salario bruto del trabajador, las deducciones por Seguridad Social e IRPF, y el líquido a percibir"
+      },
+      {
+        "concept": "⚠️ ️ Pagas extraordinarias",
+        "definition": "⚠️ ️ Retribuciones extraordinarias que se abonan mínimo dos veces al año y que siempre cotizan a la Seguridad Social de forma prorrateada"
+      },
+      {
+        "concept": "⚠️ ️ Permisos retribuidos",
+        "definition": "⚠️ ️ Ausencias del trabajo por causas establecidas en la ley que el empresario debe retribuir, como matrimonio, fallecimiento de familiar o traslado de domicilio"
+      },
+      {
+        "concept": "⚠️ ️ Periodo de prueba",
+        "definition": "⚠️ ️ Tiempo pactado en el contrato donde trabajador y empresario comprueban si la contratación les resulta conveniente, con posibilidad de finalización sin indemnización"
+      },
+      {
+        "concept": "⚠️ ️ Plan de igualdad",
+        "definition": "⚠️ ️ Conjunto de medidas para alcanzar la igualdad de trato y oportunidades entre mujeres y hombres, obligatorio para empresas de más de 50 trabajadores"
+      },
+      {
+        "concept": "Prestación por nacimiento y cuidado de menor",
+        "definition": "Suspensión del contrato de 16 semanas para ambos progenitores, siendo 6 obligatorias tras el parto, cobrando el 100% de la base de cotización"
+      },
+      {
+        "concept": "Reducción de jornada",
+        "definition": "Disminución de las horas de trabajo por cuidado de familiares, lactancia o víctima de violencia de género, con reducción proporcional de salario"
+      },
+      {
+        "concept": "⚠️ ️ Representación sindical",
+        "definition": "⚠️ ️ Sistema de participación de trabajadores afiliados a un sindicato a través de secciones sindicales y delegados sindicales en la empresa"
+      },
+      {
+        "concept": "⚠️ ️ Representación unitaria",
+        "definition": "⚠️ ️ Sistema de participación que canaliza la representación de todos los trabajadores mediante delegados de personal y comité de empresa"
+      },
+      {
+        "concept": "⚠️ ️ Retenciones a cuenta del IRPF",
+        "definition": "⚠️ ️ Cantidad que la empresa deduce mensualmente de la nómina y que ingresa en Hacienda como anticipo del impuesto anual"
+      },
+      {
+        "concept": "Riesgo durante el embarazo o lactancia",
+        "definition": "Suspensión del contrato cuando el trabajo supone un riesgo para la mujer embarazada, el feto o durante la lactancia, cobrando el 100% de la base de cotización"
+      },
+      {
+        "concept": "⚠️ ️ Salario",
+        "definition": "⚠️ ️ Totalidad de las percepciones económicas de los trabajadores, en dinero o en especie, por la prestación profesional de servicios laborales"
+      },
+      {
+        "concept": "⚠️ ️ Salario base",
+        "definition": "⚠️ ️ Retribución fijada por unidad de tiempo o de obra que cobran todos los trabajadores según su categoría profesional en el convenio colectivo"
+      },
+      {
+        "concept": "⚠️ ️ Salario bruto",
+        "definition": "⚠️ ️ Total devengado antes de aplicar las deducciones, compuesto por salario base, complementos salariales y extrasalariales"
+      },
+      {
+        "concept": "⚠️ ️ Salario en especie",
+        "definition": "⚠️ ️ Retribución pagada en productos o servicios como vivienda o vehículo, que no puede superar el 30% de las percepciones totales"
+      },
+      {
+        "concept": "⚠️ ️ Salario neto",
+        "definition": "⚠️ ️ Cantidad que realmente percibe el trabajador tras restar del salario bruto las deducciones de Seguridad Social e IRPF"
+      },
+      {
+        "concept": "Salarios de tramitación",
+        "definition": "Salarios dejados de percibir desde la fecha del despido hasta la sentencia, que se abonan en caso de despido nulo o improcedente con readmisión"
+      },
+      {
+        "concept": "Secciones sindicales",
+        "definition": "Conjunto de todos los afiliados a un sindicato dentro de una empresa, con derechos de información, reunión y negociación"
+      },
+      {
+        "concept": "⚠️ ️ Servicios mínimos",
+        "definition": "⚠️ ️ Prestaciones mínimas que deben garantizarse durante una huelga en servicios esenciales para la comunidad, fijados por el Gobierno"
+      },
+      {
+        "concept": "⚠️ ️ Sindicato",
+        "definition": "⚠️ ️ Asociación de trabajadores para la defensa y promoción de sus intereses laborales con el fin de mejorar las condiciones de trabajo"
+      },
+      {
+        "concept": "⚠️ ️ Sindicato más representativo",
+        "definition": "⚠️ ️ Sindicato que cumple requisitos de representatividad a nivel estatal (10% delegados), autonómico (15% y 1500 delegados) o sectorial (10% en sector)"
+      },
+      {
+        "concept": "Sistema Nacional de Garantía Juvenil",
+        "definition": "Programa dirigido a jóvenes entre 16 y 30 años no ocupados ni en educación o formación para facilitar su incorporación al mercado laboral"
+      },
+      {
+        "concept": "⚠️ ️ SMI",
+        "definition": "⚠️ ️ Salario Mínimo Interprofesional, cantidad mínima que fija anualmente el Gobierno para todas las profesiones en jornada completa"
+      },
+      {
+        "concept": "⚠️ ️ Suspensión del contrato",
+        "definition": "⚠️ ️ Situación donde el trabajador deja de prestar servicios y la empresa de pagar salario temporalmente, conservándose el vínculo laboral"
+      },
+      {
+        "concept": "⚠️ ️ Teletrabajo",
+        "definition": "⚠️ ️ Trabajo a distancia realizado mediante uso exclusivo o prevalente de medios informáticos, telemáticos y de telecomunicación"
+      },
+      {
+        "concept": "⚠️ ️ Tipo de cotización",
+        "definition": "⚠️ ️ Porcentaje que se aplica sobre la base de cotización para calcular la cuota a ingresar en la Seguridad Social"
+      },
+      {
+        "concept": "⚠️ ️ TRADE",
+        "definition": "⚠️ ️ Trabajador Autónomo Económicamente Dependiente que percibe al menos el 75% de sus ingresos de un mismo cliente"
+      },
+      {
+        "concept": "⚠️ ️ Trabajo a tiempo parcial",
+        "definition": "⚠️ ️ Contrato con jornada inferior a la completa, pudiendo realizarse en todas las modalidades de contrato con registro diario de horas"
+      },
+      {
+        "concept": "⚠️ ️ Trabajo nocturno",
+        "definition": "⚠️ ️ Jornada realizada entre las 22 y las 6 horas o al menos 3 horas en horario nocturno, con complemento específico y jornada máxima de 8 horas"
+      },
+      {
+        "concept": "⚠️ ️ Traslado",
+        "definition": "⚠️ ️ Cambio definitivo de centro de trabajo que supera el año en periodo de 3 años, con derecho a compensación, recurso o extinción con indemnización"
+      },
+      {
+        "concept": "Tribunal de Arbitraje Laboral",
+        "definition": "Órgano de solución extrajudicial de conflictos creado por acuerdo entre sindicatos y empresarios a nivel autonómico"
+      },
+      {
+        "concept": "Ultraactividad",
+        "definition": "Prórroga automática de los convenios colectivos hasta que sean reemplazados por nuevos convenios si existe acuerdo entre las partes"
+      },
+      {
+        "concept": "⚠️ ️ Vacaciones",
+        "definition": "⚠️ ️ Derecho personal e indisponible a un mínimo de 30 días naturales anuales remunerados, que se deben conocer con 2 meses de antelación"
+      },
+      {
+        "concept": "Víctima de violencia de género",
+        "definition": "Condición que se acredita mediante sentencia, orden de protección, resolución judicial o informe, otorgando derechos laborales especiales como reducción de jornada o extinción del contrato"
+      }
+    ]
+  }
+};
+
+function StandaloneMemoryTrainer(config) {
+    config = config || {};
+    this.cards = Array.isArray(config.cards) ? config.cards : [];
+    this.sessionTitle = config.sessionTitle || "Sesión de Estudio";
+    this.instructions = config.instructions || "Haz clic en las cartas para voltearlas.";
+    this.studyMode = config.studyMode || "mixed";
+    this.cardsPerSession = parseInt(config.cardsPerSession) || Math.min(this.cards.length, 200);
+    this.order = config.order || "sequential";
+    this.showTimer = config.showTimer !== false;
+    this.autoFlip = config.autoFlip !== false;
+    this.enableSound = config.enableSound !== false;
+    this.showProgress = config.showProgress !== false;
+    this.customColors = config.customColors || {
+        primary: "#4361ee",
+        cardFront: "#ffffff",
+        cardBack: "#f8f9fa",
+        success: "#06d6a0",
+        warning: "#ffd166",
+        danger: "#ef476f"
+    };
+    this.state = {
+        active: false,
+        currentSession: [],
+        currentCardIndex: 0,
+        startTime: null,
+        learnedCards: [],
+        difficultCards: [],
+        cardStatus: {},
+        flippedCards: new Set(),
+        sessionStats: {
+            totalCards: 0,
+            learned: 0,
+            difficult: 0,
+            remaining: 0,
+            timeSpent: 0
+        }
+    };
+    this._processCards();
+}
+
+StandaloneMemoryTrainer.prototype._processCards = function() {
+    if (!Array.isArray(this.cards)) {
+        throw new Error("Las cartas deben ser un array");
+    }
+    this.cards = this.cards.map(function(card) {
+        if (!card || typeof card !== "object") return null;
+        var conceptStr = card.concept ? String(card.concept).trim() : "";
+        var definitionStr = card.definition ? String(card.definition).trim() : "";
+        var warningChar = "⚠️";
+        var isImportantConcept = conceptStr.indexOf(warningChar) === 0;
+        var isImportantDefinition = definitionStr.indexOf(warningChar) === 0;
+        var newCard = {
+            concept: isImportantConcept ? conceptStr.substring(warningChar.length).trim() : conceptStr,
+            definition: isImportantDefinition ? definitionStr.substring(warningChar.length).trim() : definitionStr,
+            important: isImportantConcept || isImportantDefinition,
+            status: "unseen",
+            timesSeen: 0,
+            timesFlipped: 0,
+            lastSeen: null
+        };
+        return newCard;
+    }).filter(function(card) {
+        return card && card.concept && card.definition;
+    });
+    if (this.cards.length < 1) {
+        throw new Error("Se necesita al menos 1 carta para estudiar");
+    }
+};
+
+StandaloneMemoryTrainer.prototype._shuffleArray = function(array) {
+    var shuffled = array.slice();
+    for (var i = shuffled.length - 1; i > 0; i--) {
+        var j = Math.floor(Math.random() * (i + 1));
+        var temp = shuffled[i];
+        shuffled[i] = shuffled[j];
+        shuffled[j] = temp;
+    }
+    return shuffled;
+};
+
+StandaloneMemoryTrainer.prototype._getElapsedTime = function() {
+    if (!this.state.startTime) return 0;
+    return Date.now() - this.state.startTime;
+};
+
+StandaloneMemoryTrainer.prototype._formatTime = function(ms) {
+    var seconds = Math.floor(ms / 1000);
+    var minutes = Math.floor(seconds / 60);
+    var remainingSeconds = seconds % 60;
+    if (minutes > 0) {
+        return minutes + ":" + (remainingSeconds < 10 ? "0" : "") + remainingSeconds;
+    }
+    return "0:" + (remainingSeconds < 10 ? "0" : "") + remainingSeconds;
+};
+
+StandaloneMemoryTrainer.prototype._updateStats = function() {
+    var total = this.state.currentSession.length;
+    var learned = this.state.learnedCards.length;
+    var difficult = this.state.difficultCards.length;
+    var remaining = total - learned;
+    this.state.sessionStats = {
+        totalCards: total,
+        learned: learned,
+        difficult: difficult,
+        remaining: remaining,
+        timeSpent: this._getElapsedTime()
+    };
+};
+
+StandaloneMemoryTrainer.prototype.startSession = function() {
+    if (this.cards.length < 1) {
+        throw new Error("No hay cartas para estudiar");
+    }
+    this.state = {
+        active: true,
+        currentSession: [],
+        currentCardIndex: 0,
+        startTime: Date.now(),
+        learnedCards: [],
+        difficultCards: [],
+        cardStatus: {},
+        flippedCards: new Set(),
+        sessionStats: {
+            totalCards: 0,
+            learned: 0,
+            difficult: 0,
+            remaining: 0,
+            timeSpent: 0
+        }
+    };
+    var cardsToStudy = this.cards.slice();
+    if (this.studyMode === "difficult") {
+        cardsToStudy = cardsToStudy.filter(function(card) {
+            return this.state.cardStatus[card.concept] === "difficult" || card.important;
+        }.bind(this));
+    }
+    cardsToStudy = cardsToStudy.slice(0, this.cardsPerSession);
+    if (this.order === "random") {
+        cardsToStudy = this._shuffleArray(cardsToStudy);
+    }
+    this.state.currentSession = cardsToStudy;
+    this.state.sessionStats.totalCards = cardsToStudy.length;
+    this.state.sessionStats.remaining = cardsToStudy.length;
+    cardsToStudy.forEach(function(card) {
+        this.state.cardStatus[card.concept] = card.status || "unseen";
+    }.bind(this));
+    return {
+        success: true,
+        totalCards: cardsToStudy.length,
+        firstCard: cardsToStudy[0],
+        sessionTitle: this.sessionTitle
+    };
+};
+
+StandaloneMemoryTrainer.prototype.getNextCard = function() {
+    if (!this.state.active || this.state.currentCardIndex >= this.state.currentSession.length) {
+        return null;
+    }
+    var card = this.state.currentSession[this.state.currentCardIndex];
+    var totalCards = this.state.currentSession.length;
+    var currentNumber = this.state.currentCardIndex + 1;
+    var progress = totalCards > 0 ? Math.round((this.state.currentCardIndex / totalCards) * 100) : 0;
+    card.timesSeen = (card.timesSeen || 0) + 1;
+    card.lastSeen = new Date().toISOString();
+    return {
+        card: card,
+        cardNumber: currentNumber,
+        totalCards: totalCards,
+        progress: progress,
+        isImportant: card.important,
+        status: this.state.cardStatus[card.concept] || "unseen",
+        flipped: this.state.flippedCards.has(card.concept),
+        timeSpent: this._getElapsedTime()
+    };
+};
+
+StandaloneMemoryTrainer.prototype.nextCard = function() {
+    if (this.state.currentCardIndex >= this.state.currentSession.length - 1) {
+        return false;
+    }
+    this.state.currentCardIndex++;
+    return true;
+};
+
+StandaloneMemoryTrainer.prototype.previousCard = function() {
+    if (this.state.currentCardIndex <= 0) {
+        return false;
+    }
+    this.state.currentCardIndex--;
+    return true;
+};
+
+StandaloneMemoryTrainer.prototype.flipCard = function(cardConcept) {
+    var card = this.state.currentSession.find(function(c) {
+        return c.concept === cardConcept;
+    });
+    if (!card) {
+        return { success: false, error: "Carta no encontrada" };
+    }
+    this.state.flippedCards.add(cardConcept);
+    card.timesFlipped = (card.timesFlipped || 0) + 1;
+    return {
+        success: true,
+        card: card,
+        flipped: true,
+        definition: card.definition,
+        timesFlipped: card.timesFlipped
+    };
+};
+
+StandaloneMemoryTrainer.prototype.markAsLearned = function(cardConcept) {
+    var card = this.state.currentSession.find(function(c) {
+        return c.concept === cardConcept;
+    });
+    if (!card) {
+        return { success: false, error: "Carta no encontrada" };
+    }
+    this.state.cardStatus[cardConcept] = "learned";
+    if (this.state.learnedCards.indexOf(cardConcept) === -1) {
+        this.state.learnedCards.push(cardConcept);
+    }
+    var difficultIndex = this.state.difficultCards.indexOf(cardConcept);
+    if (difficultIndex > -1) {
+        this.state.difficultCards.splice(difficultIndex, 1);
+    }
+    this._updateStats();
+    return {
+        success: true,
+        card: card,
+        status: "learned",
+        learnedCount: this.state.learnedCards.length,
+        difficultCount: this.state.difficultCards.length
+    };
+};
+
+StandaloneMemoryTrainer.prototype.markAsDifficult = function(cardConcept) {
+    var card = this.state.currentSession.find(function(c) {
+        return c.concept === cardConcept;
+    });
+    if (!card) {
+        return { success: false, error: "Carta no encontrada" };
+    }
+    this.state.cardStatus[cardConcept] = "difficult";
+    if (this.state.difficultCards.indexOf(cardConcept) === -1) {
+        this.state.difficultCards.push(cardConcept);
+    }
+    var learnedIndex = this.state.learnedCards.indexOf(cardConcept);
+    if (learnedIndex > -1) {
+        this.state.learnedCards.splice(learnedIndex, 1);
+    }
+    this._updateStats();
+    return {
+        success: true,
+        card: card,
+        status: "difficult",
+        learnedCount: this.state.learnedCards.length,
+        difficultCount: this.state.difficultCards.length
+    };
+};
+
+StandaloneMemoryTrainer.prototype.resetCard = function(cardConcept) {
+    var card = this.state.currentSession.find(function(c) {
+        return c.concept === cardConcept;
+    });
+    if (!card) {
+        return { success: false, error: "Carta no encontrada" };
+    }
+    this.state.cardStatus[cardConcept] = "unseen";
+    var learnedIndex = this.state.learnedCards.indexOf(cardConcept);
+    if (learnedIndex > -1) {
+        this.state.learnedCards.splice(learnedIndex, 1);
+    }
+    var difficultIndex = this.state.difficultCards.indexOf(cardConcept);
+    if (difficultIndex > -1) {
+        this.state.difficultCards.splice(difficultIndex, 1);
+    }
+    this._updateStats();
+    return {
+        success: true,
+        card: card,
+        status: "unseen"
+    };
+};
+
+StandaloneMemoryTrainer.prototype.getStats = function() {
+    var timeSpent = this._getElapsedTime();
+    var progress = this.state.currentSession.length > 0 ? 
+        Math.round((this.state.learnedCards.length / this.state.currentSession.length) * 100) : 0;
+    return {
+        totalCards: this.state.sessionStats.totalCards,
+        learned: this.state.sessionStats.learned,
+        difficult: this.state.sessionStats.difficult,
+        remaining: this.state.sessionStats.remaining,
+        timeSpent: timeSpent,
+        timeFormatted: this._formatTime(timeSpent),
+        progress: progress,
+        currentCard: this.state.currentCardIndex + 1,
+        totalCardsInSession: this.state.currentSession.length,
+        flippedCards: this.state.flippedCards.size
+    };
+};
+
+StandaloneMemoryTrainer.prototype.endSession = function() {
+    this.state.active = false;
+    var timeSpent = this._getElapsedTime();
+    var totalCards = this.state.currentSession.length;
+    var learnedCards = this.state.learnedCards.length;
+    var difficultCards = this.state.difficultCards.length;
+    var progress = totalCards > 0 ? Math.round((learnedCards / totalCards) * 100) : 0;
+    var message, recommendation;
+    if (progress >= 80) {
+        message = "¡Excelente trabajo! Has aprendido la mayoría de los conceptos.";
+        recommendation = "Puedes repasar las cartas marcadas como difíciles o empezar una nueva sesión.";
+    } else if (progress >= 50) {
+        message = "Buen progreso. Continúa estudiando para mejorar tu dominio.";
+        recommendation = "Enfócate en las cartas marcadas como difíciles en tu próximo estudio.";
+    } else {
+        message = "Es un buen comienzo. Sigue practicando para mejorar.";
+        recommendation = "Te recomendamos repasar más las cartas que aún no dominas.";
+    }
+    // Obtener la lista completa de conceptos difíciles con sus definiciones
+    var difficultConcepts = this.state.difficultCards.map(function(concept) {
+        var card = this.state.currentSession.find(function(c) {
+            return c.concept === concept;
+        });
+        return card ? { 
+            concept: card.concept, 
+            definition: card.definition,
+            important: card.important || false
+        } : null;
+    }.bind(this)).filter(function(item) { return item !== null; });
+    return {
+        sessionTitle: this.sessionTitle,
+        timeSpent: timeSpent,
+        timeFormatted: this._formatTime(timeSpent),
+        totalCards: totalCards,
+        learnedCards: learnedCards,
+        difficultCards: difficultCards,
+        unseenCards: totalCards - learnedCards - difficultCards,
+        progress: progress,
+        message: message,
+        recommendation: recommendation,
+        difficultConcepts: difficultConcepts  // ← INCLUYE TODA LA INFORMACIÓN
+    };
+};
+
+StandaloneMemoryTrainer.prototype.exportConfig = function() {
+    var exportCards = this.cards.map(function(card) {
+        return {
+            concept: card.important ? ("⚠️ " + card.concept) : card.concept,
+            definition: card.important ? ("⚠️ " + card.definition) : card.definition
+        };
+    });
+    return {
+        metadata: {
+            version: "1.0",
+            created: new Date().toISOString(),
+            author: "Memory Trainer",
+            lastModified: new Date().toISOString(),
+            sessionTitle: this.sessionTitle,
+            totalCards: this.cards.length,
+            importantTerms: this.cards.filter(function(c) { return c.important; }).length
+        },
+        config: {
+            sessionTitle: this.sessionTitle,
+            instructions: this.instructions,
+            subject: this.subject || "General",
+            studyMode: this.studyMode,
+            cardsPerSession: this.cardsPerSession,
+            order: this.order,
+            showTimer: this.showTimer,
+            autoFlip: this.autoFlip,
+            enableSound: this.enableSound,
+            showProgress: this.showProgress,
+            customColors: this.customColors
+        },
+        content: {
+            cards: exportCards
+        }
+    };
+};
+
+StandaloneMemoryTrainer.prototype.generateStandaloneHTML = function(options) {
+    return "Función no disponible en standalone";
+};
+
+
+
+// FUNCIONES PRINCIPALES DEL ENTRENADOR
+var trainer = null;
+var currentCard = null;
+var sessionActive = false;
+var autoFlipTimeout = null;
+var timerInterval = null;
+
+// EXPORTAR PARA COMPATIBILIDAD CON EL ENSAMBLADOR
+if (typeof window !== "undefined") {
+    window.MemoryTrainer = StandaloneMemoryTrainer;
+    window.MemoryTrainerManager = {
+        createTrainer: function(config) {
+            return new StandaloneMemoryTrainer(config);
+        }
+    };
+}
+
+function escapeHTML(text) {
+    if (text === null || text === undefined) return "";
+    var div = document.createElement("div");
+    div.textContent = String(text);
+    return div.innerHTML;
+}
+
+function showMessage(message, type) {
+    var messageDiv = document.createElement("div");
+    messageDiv.className = "status-message " + type;
+    var emoji = "ℹ️";
+    if (type === "error") emoji = "❌";
+    else if (type === "warning") emoji = "⚠️";
+    else if (type === "success") emoji = "✅";
+    messageDiv.innerHTML = "<span class=\"emoji\">" + emoji + "</span> " + escapeHTML(message);
+    var trainerContent = document.getElementById("trainerContent");
+    trainerContent.insertBefore(messageDiv, trainerContent.firstChild);
+    setTimeout(function() {
+        if (messageDiv.parentNode) {
+            messageDiv.parentNode.removeChild(messageDiv);
+        }
+    }, 3000);
+}
+
+function initTrainer() {
+    try {
+        var cardsToUse = EMBEDDED_TRAINER_DATA.content.cards || [];
+        if (cardsToUse.length < 1) {
+            showNoCardsScreen("No hay cartas para estudiar");
+            return;
+        }
+        trainer = new StandaloneMemoryTrainer({
+            cards: cardsToUse,
+            sessionTitle: EMBEDDED_TRAINER_DATA.config.sessionTitle || "Sesión de Estudio",
+            instructions: EMBEDDED_TRAINER_DATA.config.instructions || "",
+            studyMode: EMBEDDED_TRAINER_DATA.config.studyMode || "mixed",
+            cardsPerSession: EMBEDDED_TRAINER_DATA.config.cardsPerSession || 20,
+            order: EMBEDDED_TRAINER_DATA.config.order || "sequential",
+            showTimer: EMBEDDED_TRAINER_DATA.config.showTimer !== false,
+            autoFlip: EMBEDDED_TRAINER_DATA.config.autoFlip !== false,
+            enableSound: EMBEDDED_TRAINER_DATA.config.enableSound !== false,
+            showProgress: EMBEDDED_TRAINER_DATA.config.showProgress !== false,
+            customColors: EMBEDDED_TRAINER_DATA.config.customColors || {
+                primary: "#4361ee",
+                cardFront: "#ffffff",
+                cardBack: "#f8f9fa",
+                success: "#06d6a0",
+                warning: "#ffd166",
+                danger: "#ef476f"
+            }
+        });
+        showStartScreen();
+    } catch (error) {
+        console.error("Error:", error);
+        showNoCardsScreen(error.message);
+    }
+}
+
+function showNoCardsScreen(message) {
+    var trainerContent = document.getElementById("trainerContent");
+    var html = "";
+    html += '<div class="no-cards-screen">';
+    html += '<span class="emoji">⚠️</span>';
+    html += '<h2>Error</h2>';
+    html += '<p>' + escapeHTML(message) + '</p>';
+    html += '<button class="btn btn-primary" onclick="location.reload()">';
+    html += '<span class="emoji">🔄</span> Recargar';
+    html += '</button>';
+    html += '</div>';
+    trainerContent.innerHTML = html;
+}
+
+function showStartScreen() {
+    var trainerContent = document.getElementById("trainerContent");
+    var instructions = EMBEDDED_TRAINER_DATA.config.instructions || "Haz clic en las cartas para voltearlas.";
+    var html = "";
+    html += '<div class="start-screen">';
+    html += '<h2><span class="emoji">▶️</span> Comenzar Estudio</h2>';
+    html += '<div class="instructions-box">';
+    html += '<span class="emoji">ℹ️</span>';
+    html += '<p>' + escapeHTML(instructions) + '</p>';
+    html += '</div>';
+    html += '<div class="study-tips">';
+    html += '<h3><span class="emoji">💡</span> Consejos de estudio:</h3>';
+    html += '<ul>';
+    html += '<li><span class="emoji">✅</span> Haz clic en la carta para ver la definición</li>';
+    html += '<li><span class="emoji">⭐</span> Marca como ✓ Aprendida si ya conoces el concepto</li>';
+    html += '<li><span class="emoji">⚠️</span> Marca como ✗ Dificultad si necesitas repasarlo</li>';
+    html += '<li><span class="emoji">🔄</span> Las cartas difíciles aparecerán más veces</li>';
+    html += '<li><span class="emoji">⚡</span> Al marcar una respuesta, automáticamente pasarás a la siguiente</li>';
+    html += '</ul>';
+    html += '</div>';
+    html += '<div class="session-summary">';
+    html += '<div class="summary-item">';
+    html += '<span class="emoji">📚</span>';
+    html += '<span>' + trainer.cards.length + ' cartas disponibles</span>';
+    html += '</div>';
+    html += '<div class="summary-item">';
+    html += '<span class="emoji">⚙️</span>';
+    html += '<span>Modo: ' + (trainer.studyMode === "difficult" ? "Solo difíciles" : "Todas") + '</span>';
+    html += '</div>';
+    html += '<div class="summary-item">';
+    html += '<span class="emoji">🔀</span>';
+    html += '<span>Orden: ' + (trainer.order === "random" ? "Aleatorio" : "Secuencial") + '</span>';
+    html += '</div>';
+    html += '</div>';
+    html += '<div class="controls">';
+    html += '<button class="btn btn-primary btn-large" id="startStudyBtn">';
+    html += '<span class="emoji">▶️</span> Comenzar Estudio';
+    html += '</button>';
+    html += '</div>';
+    html += '</div>';
+    trainerContent.innerHTML = html;
+    document.getElementById("startStudyBtn").addEventListener("click", startStudySession);
+}
+
+function startStudySession() {
+    sessionActive = true;
+    var result = trainer.startSession();
+    if (result.success) {
+        showStudyCard();
+        startTimer();
+    }
+}
+
+function showStudyCard() {
+    currentCard = trainer.getNextCard();
+    if (!currentCard) {
+        endStudySession();
+        return;
+    }
+    var trainerContent = document.getElementById("trainerContent");
+    var card = currentCard.card;
+    var importantBadge = currentCard.isImportant ? '<div class="important-badge"><span class="emoji">⚠️</span> Importante</div>' : "";
+    var statusBadge = "";
+    if (currentCard.status === "learned") {
+        statusBadge = '<div class="status-badge learned"><span class="emoji">✅</span> Aprendida</div>';
+    } else if (currentCard.status === "difficult") {
+        statusBadge = '<div class="status-badge difficult"><span class="emoji">⚠️</span> Dificultad</div>';
+    }
+    var html = "";
+    html += '<div class="study-screen">';
+    html += '<div class="progress-bar-container">';
+    html += '<div class="progress-bar" style="width: ' + currentCard.progress + '%"></div>';
+    html += '<div class="progress-label">Carta ' + currentCard.cardNumber + ' de ' + currentCard.totalCards + ' (' + currentCard.progress + '%)</div>';
+    html += '</div>';
+    html += importantBadge;
+    html += statusBadge;
+    html += '<div class="card-container" id="cardContainer">';
+    html += '<div class="flashcard" id="flashcard">';
+    html += '<div class="card-front" id="cardFront">';
+    html += '<div class="card-content">';
+    html += '<h3>Concepto</h3>';
+    html += '<div class="concept-text">' + escapeHTML(card.concept) + '</div>';
+    html += '</div>';
+    html += '<div class="card-hint">Haz clic para ver la definición</div>';
+    html += '</div>';
+    html += '<div class="card-back" id="cardBack">';
+    html += '<div class="card-content">';
+    html += '<h3>Definición</h3>';
+    html += '<div class="definition-text">' + escapeHTML(card.definition) + '</div>';
+    html += '</div>';
+    html += '<div class="card-hint">Haz clic para ver el concepto</div>';
+    html += '</div>';
+    html += '</div>';
+    html += '</div>';
+    html += '<div class="card-actions">';
+    html += '<button class="btn btn-success" id="markLearnedBtn">';
+    html += '<span class="emoji">✅</span> ✓ Aprendida';
+    html += '</button>';
+    html += '<button class="btn btn-warning" id="markDifficultBtn">';
+    html += '<span class="emoji">⚠️</span> ✗ Dificultad';
+    html += '</button>';
+    html += '<button class="btn btn-secondary" id="resetCardBtn">';
+    html += '<span class="emoji">🔄</span> Reiniciar';
+    html += '</button>';
+    html += '</div>';
+    html += '<div class="session-controls">';
+    html += '<button class="btn btn-danger" id="endSessionBtn">';
+    html += '<span class="emoji">⏹️</span> Terminar Sesión';
+    html += '</button>';
+    html += '</div>';
+    html += '</div>';
+    trainerContent.innerHTML = html;
+    updateUI();
+    var flashcard = document.getElementById("flashcard");
+    if (currentCard.flipped) {
+        flashcard.classList.add("flipped");
+    }
+    flashcard.addEventListener("click", function() {
+        flipCurrentCard();
+    });
+    document.getElementById("markLearnedBtn").addEventListener("click", function() {
+        markCardAsLearnedAndContinue();
+    });
+    document.getElementById("markDifficultBtn").addEventListener("click", function() {
+        markCardAsDifficultAndContinue();
+    });
+    document.getElementById("resetCardBtn").addEventListener("click", function() {
+        resetCardStatus();
+    });
+    document.getElementById("endSessionBtn").addEventListener("click", endStudySession);
+    if (trainer.autoFlip && !currentCard.flipped) {
+        startAutoFlipTimer();
+    }
+}
+
+function flipCurrentCard() {
+    if (!currentCard || !sessionActive) return;
+    var flashcard = document.getElementById("flashcard");
+    var result = trainer.flipCard(currentCard.card.concept);
+    if (result.success) {
+        flashcard.classList.toggle("flipped");
+        if (trainer.enableSound) {
+            playFlipSound();
+        }
+        clearAutoFlipTimer();
+    }
+}
+
+function markCardAsLearnedAndContinue() {
+    if (!currentCard || !sessionActive) return;
+    var result = trainer.markAsLearned(currentCard.card.concept);
+    if (result.success) {
+        showMessage("✅ Marcada como aprendida - Pasando a la siguiente...", "success");
+        updateUI();
+        setTimeout(function() {
+            if (trainer.nextCard()) {
+                showStudyCard();
+            } else {
+                endStudySession();
+            }
+        }, 800);
+    }
+}
+
+function markCardAsDifficultAndContinue() {
+    if (!currentCard || !sessionActive) return;
+    var result = trainer.markAsDifficult(currentCard.card.concept);
+    if (result.success) {
+        showMessage("⚠️ Marcada como difícil - Pasando a la siguiente...", "warning");
+        updateUI();
+        setTimeout(function() {
+            if (trainer.nextCard()) {
+                showStudyCard();
+            } else {
+                endStudySession();
+            }
+        }, 800);
+    }
+}
+
+function resetCardStatus() {
+    if (!currentCard || !sessionActive) return;
+    var result = trainer.resetCard(currentCard.card.concept);
+    if (result.success) {
+        showMessage("🔄 Estado de la carta reiniciado", "info");
+        updateUI();
+    }
+}
+
+function startAutoFlipTimer() {
+    if (!trainer.autoFlip) return;
+    clearAutoFlipTimer();
+    autoFlipTimeout = setTimeout(function() {
+        if (sessionActive && currentCard && !currentCard.flipped) {
+            flipCurrentCard();
+        }
+    }, 5000);
+}
+
+function clearAutoFlipTimer() {
+    if (autoFlipTimeout) {
+        clearTimeout(autoFlipTimeout);
+        autoFlipTimeout = null;
+    }
+}
+
+function startTimer() {
+    if (!trainer.showTimer) return;
+    clearInterval(timerInterval);
+    timerInterval = setInterval(updateTimer, 1000);
+}
+
+function updateTimer() {
+    if (!sessionActive) {
+        clearInterval(timerInterval);
+        return;
+    }
+    var stats = trainer.getStats();
+    document.getElementById("timeDisplay").textContent = stats.timeFormatted;
+}
+
+function updateUI() {
+    if (!sessionActive) return;
+    var stats = trainer.getStats();
+    document.getElementById("learnedDisplay").textContent = stats.learned;
+    if (trainer.showTimer) {
+        document.getElementById("timeDisplay").textContent = stats.timeFormatted;
+    }
+}
+
+function playFlipSound() {
+    try {
+        var audioContext = new (window.AudioContext || window.webkitAudioContext)();
+        var oscillator = audioContext.createOscillator();
+        var gainNode = audioContext.createGain();
+        oscillator.connect(gainNode);
+        gainNode.connect(audioContext.destination);
+        oscillator.frequency.value = 523.25;
+        gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
+        gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.5);
+        oscillator.start(audioContext.currentTime);
+        oscillator.stop(audioContext.currentTime + 0.5);
+    } catch (e) {
+        // Silenciar error si AudioContext no está disponible
+    }
+}
+
+function endStudySession() {
+    sessionActive = false;
+    clearAutoFlipTimer();
+    clearInterval(timerInterval);
+    var results = trainer.endSession();
+    showResultsScreen(results);
+}
+
+function showResultsScreen(results) {
+    var trainerContent = document.getElementById("trainerContent");
+    var html = "";
+    html += '<div class="results-screen">';
+    html += '<h2><span class="emoji">🏆</span> Sesión Completada</h2>';
+    html += '<div class="results-message">' + escapeHTML(results.message) + '</div>';
+    html += '<div class="results-recommendation">' + escapeHTML(results.recommendation) + '</div>';
+    html += '<div class="results-stats">';
+    html += '<div class="stat-card">';
+    html += '<div class="stat-icon"><span class="emoji">⏱️</span></div>';
+    html += '<div class="stat-value">' + escapeHTML(results.timeFormatted) + '</div>';
+    html += '<div class="stat-label">Tiempo</div>';
+    html += '</div>';
+    html += '<div class="stat-card">';
+    html += '<div class="stat-icon"><span class="emoji">✅</span></div>';
+    html += '<div class="stat-value">' + results.learnedCards + '</div>';
+    html += '<div class="stat-label">Aprendidas</div>';
+    html += '</div>';
+    html += '<div class="stat-card">';
+    html += '<div class="stat-icon"><span class="emoji">⚠️</span></div>';
+    html += '<div class="stat-value">' + results.difficultCards + '</div>';
+    html += '<div class="stat-label">Difíciles</div>';
+    html += '</div>';
+    html += '<div class="stat-card">';
+    html += '<div class="stat-icon"><span class="emoji">📊</span></div>';
+    html += '<div class="stat-value">' + results.progress + '%</div>';
+    html += '<div class="stat-label">Progreso</div>';
+    html += '</div>';
+    html += '</div>';
+    if (results.difficultConcepts && results.difficultConcepts.length > 0) {
+        html += '<div class="difficult-concepts">';
+        html += '<h3><span class="emoji">⚠️</span> Conceptos marcados como difíciles</h3>';
+        html += '<p>Estos son los conceptos que deberías repasar en tu próxima sesión:</p>';
+        html += '<div class="concepts-list">';
+        // Generar cada concepto difícil
+        results.difficultConcepts.forEach(function(item) {
+            var importantTag = item.important ? '<span class="important-tag">IMPORTANTE</span>' : "";
+            html += '<div class="concept-item">';
+            html += '<div class="concept-header">';
+            html += '<span class="emoji">📌</span>';
+            html += '<div class="concept-title">' + escapeHTML(item.concept) + '</div>';
+            html += importantTag;
+            html += '</div>';
+            html += '<div class="definition-content">';
+            html += '<strong>Definición:</strong> ' + escapeHTML(item.definition);
+            html += '</div>';
+            html += '</div>';
+        });
+        html += '</div>';
+        html += '</div>';
+    } else {
+        html += '<div class="difficult-concepts">';
+        html += '<h3><span class="emoji">🎉</span> ¡Excelente trabajo!</h3>';
+        html += '<div class="no-difficult-concepts">';
+        html += '<span class="emoji">✅</span>';
+        html += '<p>No hay conceptos marcados como difíciles. ¡Has dominado todos los conceptos de esta sesión!</p>';
+        html += '</div>';
+        html += '</div>';
+    }
+    html += '<div class="controls">';
+    html += '<button class="btn btn-primary" id="restartSessionBtn">';
+    html += '<span class="emoji">🔄</span> Nueva Sesión';
+    html += '</button>';
+    html += '<button class="btn btn-secondary" id="mainMenuBtn">';
+    html += '<span class="emoji">🏠</span> Menú Principal';
+    html += '</button>';
+    html += '</div>';
+    html += '</div>';
+    trainerContent.innerHTML = html;
+    document.getElementById("restartSessionBtn").addEventListener("click", function() {
+        startStudySession();
+    });
+    document.getElementById("mainMenuBtn").addEventListener("click", showStartScreen);
+}
+
+// INICIALIZAR CUANDO SE CARGA LA PÁGINA
+document.addEventListener("DOMContentLoaded", function() {
+    initTrainer();
+});
+
+    </script>
+</body>
+</html>
